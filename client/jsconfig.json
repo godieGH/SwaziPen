@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@scss/*": ["./src/scss/*"],
+      "@components/*": [".src/components/*"],
+      "@ace-customs/*": [".src/customs/*"]
+    }
+  }
+}

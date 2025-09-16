@@ -1,11 +1,17 @@
-import { useState } from 'react'
-import viteLogo from '/vite.svg'
-import './App.css'
+import TopNav from "@components/TopNav.jsx";
+import SideBar from "@components/SideBar.jsx"
+import Editor from "@components/Editor.jsx"
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (<>hello world</>)
+   return (
+      <>
+         <div>
+            <TopNav />
+            <SideBar/>
+            <Editor/>
+         </div>
+      </>
+   );
 }
 
-export default App
+export default App;
