@@ -1,0 +1,39 @@
+{
+  "name": "swazipen",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "SwaziPen: Browser-based IDE for SwaziLang – edit, navigate, and run your SwaziLang projects in a project-scoped web editor powered by Node.js and Monaco.",
+  "bin": {
+    "swazipen": "./bin/swazipen.js"
+  },
+  "scripts": {
+    "server": "nodemon server/index.js",
+    "client": "cd ./client && pnpm dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/godieGH/SwaziPen.git"
+  },
+  "author": "godieGH",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/godieGH/SwaziPen/issues"
+  },
+  "homepage": "https://github.com/godieGH/SwaziPen#readme",
+  "packageManager": "pnpm@10.16.1+sha512.0e155aa2629db8672b49e8475da6226aa4bdea85fdcdfdc15350874946d4f3c91faaf64cbdc4a5d1ab8002f473d5c3fcedcd197989cf0390f9badd3c04678706",
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "chokidar": "^4.0.3",
+    "commander": "^14.0.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "fs-extra": "^11.3.2",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "socket.io": "^4.8.1",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "dotenv": "^17.2.2"
+  }
+}
