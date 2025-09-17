@@ -1,0 +1,42 @@
+/* BottomBarTools.scss */
+
+.bottom-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly ;
+  background-color: #1e1e1e;
+  padding: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+
+  .tool-button {
+    background-color: transparent;
+    border: none;
+    color: #ecf0f1;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  .separator {
+    height: 25px;
+    width: 1px;
+    background-color: #606060;
+    margin: 0 5px;
+  }
+}

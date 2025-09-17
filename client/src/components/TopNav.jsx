@@ -21,7 +21,7 @@ function TopNav() {
                   <FaSearch color="#9e9e9e"/>
                </div>
                <div>
-                  <FaPlay color="#4caf8e"/>
+                  <FaPlay/>
                </div>
             </div>
          </div>
