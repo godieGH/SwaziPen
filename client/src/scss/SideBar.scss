@@ -24,6 +24,8 @@ $transition-speed: 0.3s;
    }
 
    .sidebar__content {
+      overflow-y: scroll;
+      height: 100dvh;
       .root-folder-name {
          padding: 10px;
          display: flex;
