@@ -1,0 +1,66 @@
+$sidebar-width-desktop: 280px;
+$sidebar-width-mobile: 80%;
+$sidebar-bg-color: #1a1a1a;
+$sidebar-text-color: white;
+$transition-speed: 0.3s;
+
+.sidebar {
+   user-select: none;
+   position: fixed;
+   top: 0;
+   left: 0;
+   height: 100vh;
+   width: $sidebar-width-desktop;
+   background-color: $sidebar-bg-color;
+   color: $sidebar-text-color;
+   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.5);
+   transform: translateX(-100%);
+   transition: transform $transition-speed ease-in-out;
+   z-index: 1000;
+
+   // Modifier class to slide it into view
+   &--open {
+      transform: translateX(0);
+   }
+
+   .sidebar__content {
+      .root-folder-name {
+         padding: 20px 10px 0px 10px;
+         display: flex;
+         align-items: center;
+         gap: 10px;
+
+         div {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+         }
+      }
+   }
+
+   // Responsive adjustments for mobile
+   @media (max-width: 768px) {
+      width: $sidebar-width-mobile;
+   }
+}
+
+// Overlay styling
+.sidebar__overlay {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background-color: rgba(0, 0, 0, 0.6);
+   z-index: 999;
+   opacity: 0;
+   visibility: hidden;
+   transition:
+      opacity $transition-speed ease-in-out,
+      visibility $transition-speed ease-in-out;
+
+   &--open {
+      opacity: 1;
+      visibility: visible;
+   }
+}

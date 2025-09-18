@@ -1,5 +1,4 @@
 import TopNav from "@components/TopNav.jsx";
-import SideBar from "@components/SideBar.jsx";
 import Editor from "@components/Editor.jsx";
 
 function App() {
@@ -7,7 +6,6 @@ function App() {
       <>
          <div>
             <TopNav />
-            <SideBar />
             <Editor />
          </div>
       </>
