@@ -25,10 +25,11 @@ $transition-speed: 0.3s;
 
    .sidebar__content {
       .root-folder-name {
-         padding: 20px 10px 0px 10px;
+         padding: 10px;
          display: flex;
          align-items: center;
          gap: 10px;
+         border-bottom: 1px solid #2c2c2c;
 
          div {
             white-space: nowrap;
