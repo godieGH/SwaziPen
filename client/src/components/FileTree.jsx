@@ -594,11 +594,15 @@ function FileTree({
             return;
          }
          if (
-            node.type === "folder" &&
-            node.children &&
-            node.children.length > 0
+            node.type === "folder"
          ) {
             if (!window.confirm("Delete folder and all its contents?")) {
+               setOpenMenu(null);
+               return;
+            }
+         }
+         if(node.type === "file") {
+            if (!window.confirm("Confirm to `delete` this file?")) {
                setOpenMenu(null);
                return;
             }

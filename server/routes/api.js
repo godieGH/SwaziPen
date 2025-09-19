@@ -23,8 +23,21 @@ router.post("/get/file/content", async (req, res) => {
    res.json({code: content, meta : {node, parent}})
    } catch (err) {
       console.error(chalk.grey(err.message))
+      res.status(500).json(err.message)
    }
 })
 
+
+router.post("/save/file", async (req, res) => {
+   try {
+      const {content, filename, treeFileData} = req.body
+      const saveToPath = path.resolve(req.scannedWD, ".." , treeFileData.path.map(pn => pn.name).join("/"))
+      await fs.outputFile(saveToPath, content, "utf8")
+      res.json("saved")
+   } catch (err) {
+      console.error(chalk.grey(err.message))
+      res.status(500).json(err.message)
+   }
+})
 
 export default router

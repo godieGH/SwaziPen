@@ -1,63 +1,126 @@
-import {useState } from "react"
-import api from "../api/axios.js";
-import { useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect } from "react";
+import api from "@api/axios.js";
+import socket from "@api/socket.js";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useLoadedFileStore from "@stores/loadedFile.js";
 import FileTree from "@components/FileTree.jsx";
 import Skeleton from "@components/Skeletons/Skeleton.jsx";
 
 async function fetchFileTree() {
-   const { data } = await api.get("/api/filetree");
-   return data;
+  const { data } = await api.get("/api/filetree");
+  return data;
 }
+
 async function fetchFileContent(payload) {
-   const { data } = await api.post("/api/get/file/content", payload);
-   return data;
+  const { data } = await api.post("/api/get/file/content", payload);
+  return data;
 }
 
 function SideBarContent({ onFileLoad }) {
-   const { data, isLoading, isError, error } = useQuery({
-      queryKey: ["filetree"],
-      queryFn: fetchFileTree
-   });
-   const loadFileName = useLoadedFileStore(state => state.loadFileName);
-   const loadContent = useLoadedFileStore(state => state.loadContent);
-   
-   const handleFileSelect = async (payload) => {
-      loadFileName(payload.node.path);
-      const fcont = await fetchFileContent(payload)
-      console.log(fcont)
-      loadContent(fcont.code);
-      onFileLoad();
-   };
+  const queryClient = useQueryClient();
 
-   if (isLoading) {
-      return (
-         <div style={{ padding: "10px" }}>
-            <Skeleton
-               variant="text"
-               count={5}
-               lineWidths={["100%", "96%", "100%", "60%", "66%"]}
-               height={18}
-            />
-         </div>
-      );
-   }
-   if (isError) {
-      return (
-         <div style={{ padding: "20px 10px", color: "red" }}>
-            Error: {error.message}
-         </div>
-      );
-   }
-   return (
-      <>
-         <FileTree
-            fileTree={data.filetree}
-            onSelect={handleFileSelect}
-            onChange={d => console.log(d)}
-         />
-      </>
-   );
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["filetree"],
+    queryFn: fetchFileTree,
+    staleTime: 1000 * 60 * 2,
+    refetchOnWindowFocus: false,
+    retry: 3
+  });
+
+  // Listen for socket pushes and keep the react-query cache in sync.
+  // We rely on the server to emit the same payload shape your REST API returns:
+  // { filetree: [...] } so replacing the query data with the socket payload will
+  // update `data` used below and re-render the FileTree.
+  useEffect(() => {
+    function handleTreePayload(payload) {
+      if (!payload) return;
+      // Overwrite the cached filetree query with the new payload from socket
+      queryClient.setQueryData(["filetree"], payload);
+    }
+
+    function handleError(err) {
+      console.error("filetree socket error:", err);
+    }
+
+    socket.on("filetree:init", handleTreePayload);
+    socket.on("filetree:update", handleTreePayload);
+    socket.on("filetree:error", handleError);
+
+    return () => {
+      socket.off("filetree:init", handleTreePayload);
+      socket.off("filetree:update", handleTreePayload);
+      socket.off("filetree:error", handleError);
+    };
+  }, [queryClient]);
+
+  const setTreeFileData = useLoadedFileStore(state => state.setTreeFileData);
+  const loadFileName = useLoadedFileStore(state => state.loadFileName);
+  const loadContent = useLoadedFileStore(state => state.loadContent);
+
+  const fileContentMutation = useMutation({
+    mutationFn: fetchFileContent,
+    onSuccess: (data, variables) => {
+      loadFileName(variables.node.path);
+      loadContent(data.code);
+      queryClient.setQueryData(["file", variables.node.path, variables.node.id], data);
+      onFileLoad?.();
+    },
+    onError: (err) => {
+      console.error("Failed to fetch file content:", err);
+    }
+  });
+
+  const handleFileSelect = useCallback((payload) => {
+    setTreeFileData(payload);
+    fileContentMutation.mutate(payload);
+  }, [fileContentMutation, queryClient, loadFileName, loadContent, onFileLoad]);
+  
+  
+  
+  
+  if (isLoading) {
+    return (
+      <div style={{ padding: "10px" }}>
+        <Skeleton
+          variant="text"
+          count={5}
+          lineWidths={["100%", "96%", "100%", "60%", "66%"]}
+          height={18}
+        />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div style={{ padding: "20px 10px", color: "red" }}>
+        Error: {error.message}
+      </div>
+    );
+  }
+
+  // NOTE: data is expected to be the same shape returned by your API: { filetree: [...] }
+  return (
+    <>
+      {fileContentMutation.isLoading && (
+        <div style={{ padding: "8px 10px", fontSize: 12 }}>
+          Loading file…
+        </div>
+      )}
+      {fileContentMutation.isError && (
+        <div style={{ padding: "8px 10px", color: "orange", fontSize: 12 }}>
+          Could not load file: {fileContentMutation.error?.message}
+        </div>
+      )}
+
+      <FileTree
+        fileTree={data?.filetree}
+        onSelect={handleFileSelect}
+        onNewFile={handleNewFile}
+        onChange={d => console.log(d)}
+      />
+    </>
+  );
 }
 
 export default SideBarContent;

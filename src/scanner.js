@@ -17,39 +17,39 @@ function generateId(dirPath, basePath, { hashLength = 8 } = {}) {
 }
 
 function normalizeForOutput(p) {
-  // Use '.' for root, normalize separators to '/'
   if (!p) return '.';
   if (p === '.') return '.';
   return p.split(path.sep).join('/');
 }
 
+/**
+ * scanDirectory now accepts opts.onNode(node) (optional) which will be called
+ * after a node object is constructed (for both files and directories).
+ * This is non-breaking: if no onNode passed, nothing happens.
+ */
 async function scanDirectory(dirPath, basePath, rootPath = basePath, opts = { followSymlinks: false }) {
   let stats;
   try {
-    // use lstat so we can detect symlinks
     stats = await fs.lstat(dirPath);
   } catch (err) {
-    // can't stat (permissions, broken symlink, etc.) — surface as a minimal node or skip
     throw err;
   }
 
-  // if it's a symlink and we're not following symlinks, skip descending
   if (stats.isSymbolicLink() && !opts.followSymlinks) {
-    return {
+    const node = {
       id: generateId(dirPath, basePath),
       name: path.basename(dirPath),
       type: 'symlink',
       path: normalizeForOutput(path.relative(rootPath, dirPath) || '.'),
     };
+    if (typeof opts.onNode === 'function') opts.onNode(node);
+    return node;
   }
 
   const isDirectory = stats.isDirectory();
   const name = path.basename(dirPath);
-
-  // compute path relative to the original root
   const relToRoot = path.relative(rootPath, dirPath) || '.';
   const relativePathForNode = normalizeForOutput(relToRoot);
-
   const id = generateId(dirPath, basePath);
 
   const node = {
@@ -66,35 +66,36 @@ async function scanDirectory(dirPath, basePath, rootPath = basePath, opts = { fo
     } catch (err) {
       node.children = [];
       node.error = `readdir failed: ${err.message}`;
+      if (typeof opts.onNode === 'function') opts.onNode(node);
       return node;
     }
 
     const childPromises = children
-      .filter(item => !item.startsWith('.')) // Exclude dotfiles
+      .filter(item => !item.startsWith('.'))
       .map(async item => {
         const childPath = path.join(dirPath, item);
         const resolvedChild = path.resolve(childPath);
 
-        // Security check: ensure the resolved child is inside the rootPath
         const rel = path.relative(rootPath, resolvedChild);
-        // If rel starts with '..' then the child is outside root (possible via symlink)
         if (rel.startsWith('..')) {
-          return {
+          const skipped = {
             id: generateId(resolvedChild, basePath),
             name: item,
             type: 'skipped',
             path: normalizeForOutput(path.relative(rootPath, resolvedChild) || '.'),
             reason: 'outside root (symlink or mount)',
           };
+          if (typeof opts.onNode === 'function') opts.onNode(skipped);
+          return skipped;
         }
 
-        // Recurse with the same rootPath and options
         return scanDirectory(resolvedChild, basePath, rootPath, opts);
       });
 
     node.children = await Promise.all(childPromises);
   }
 
+  if (typeof opts.onNode === 'function') opts.onNode(node);
   return node;
 }
 

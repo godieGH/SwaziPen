@@ -1,6 +1,8 @@
 // src/ace-setup.js
 import ace from "ace-builds/src-noconflict/ace";
 
-// Register your custom mode & theme so they exist before editor mounts
-import "@ace_customs/modes/swazilang"; // your mode file (in src)
-import "@ace_customs/themes/swazipen"; // your theme file (in src)
+import "ace-builds/src-noconflict/theme-github"
+import "ace-builds/src-noconflict/theme-github_dark"
+
+import "@ace_customs/modes/swazilang"; 
+import "@ace_customs/themes/swazipen"; 

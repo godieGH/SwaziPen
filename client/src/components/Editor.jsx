@@ -1,14 +1,40 @@
 // src/components/Editor.jsx
 import { useEffect, useRef } from "react";
-import path from "path"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "../api/axios.js";
 import useLoadedFileStore from "@stores/loadedFile.js";
 import AceEditor from "react-ace";
 import BottomBarTools from "@components/BottomBarTools.jsx";
 
+
+async function saveFile(payload) {
+   const {data} = await api.post("/api/save/file", payload)
+   return data
+}
+
+
 function Editor() {
+   
+   const mutateFileContent = useMutation({
+      mutationFn: saveFile,
+      onSuccess: (data, vars) => {
+         console.log(data, vars)
+      },
+      onError: (err) => {
+         console.error("Failes to save file", err)
+      }
+   })
+   
+   
+   
   // store selectors
+  const treeFileData = useLoadedFileStore((s) => s.treeFileData);
   const sourceContent = useLoadedFileStore((s) => s.content);
+  const filename = useLoadedFileStore((s) => s.filename);
   const updateSource = useLoadedFileStore((s) => s.updateSource);
+  const theme = useLoadedFileStore((s) => s.theme);
+  const mode = useLoadedFileStore((s) => s.mode);
+  
   // applyNewContent is used by the debounced commit
   const applyNewContent = useLoadedFileStore.getState().applyNewContent;
 
@@ -74,24 +100,32 @@ function Editor() {
     if (data.title === "Navigate Right") ed.navigateRight(1);
     if (data.title === "Undo") ed.undo();
     if (data.title === "Redo") ed.redo();
+    if (data.title === "Save File") {
+       if(!treeFileData) return
+       mutateFileContent.mutate({
+          filename,
+          treeFileData,
+          content: sourceContent
+       })
+    }
   };
 
   return (
     <>
       <AceEditor
         name="SwaziPenEditor"
-        mode="swazilang"
-        theme="swazipen"
+        mode={mode}
+        theme={theme}
         width="100%"
         height="86dvh"
         fontSize={14}
         onLoad={handleLoad}
-        value={sourceContent}         // keep it driven by the store.content
-        onChange={handleChange}       // update newContent (then debounce commit)
+        value={sourceContent}         
+        onChange={handleChange}   
         setOptions={{
-          enableBasicAutocompletion: true,
-          enableLiveAutocompletion: true,
-          enableSnippets: true,
+          //enableBasicAutocompletion: true,
+          //enableLiveAutocompletion: true,
+          //enableSnippets: true,
           showLineNumbers: true,
           tabSize: 3,
           wrap: true,

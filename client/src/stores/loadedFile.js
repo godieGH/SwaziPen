@@ -2,11 +2,26 @@
 import { create } from "zustand";
 
 const useLoadedFileStore = create((set) => ({
+  treeFileData: null,
   filename: "untitled.txt",
-  content: "# start your code with swazi",
+  content: "",
   newContent: "",
+  theme: "github_dark",
+  mode: null,
+  
+  setTreeFileData: (data) => {
+     set(() => ({
+        treeFileData: data
+     }))
+  },
 
-  loadFileName: (name) => set(() => ({ filename: name })),
+  // set filename and update mode when extension matches
+  loadFileName: (name) => {
+    const lower = (name || "").toLowerCase();
+    const isSwazi = /\.sl$|\.swz$/i.test(lower); // matches .sl or .swz
+    set(() => ({ filename: name, mode: isSwazi ? "swazilang" : null, theme: isSwazi? "swazipen": "github_dark" }));
+  },
+
   loadContent: (source) => set(() => ({ content: source })),
 
   // FIXED: use the parameter you receive
