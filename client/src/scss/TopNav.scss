@@ -1,44 +1,53 @@
 .top-nav-bar {
-  width: 100%;
-  border-bottom: 1px solid #2a2a2a;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  box-sizing: border-box;
+   width: 100%;
+   border-bottom: 1px solid #2a2a2a;
+   padding: 5px;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   flex-wrap: wrap;
+   box-sizing: border-box;
 
-  .menu-icon {
-    padding: 10px;
-    margin-right: 8px;
-    cursor: pointer;
-  }
+   .menu-icon {
+      padding: 10px;
+      margin-right: 8px;
+      cursor: pointer;
+   }
 
-  .recent-opened-file-menu {
-    flex-grow: 1;
-    padding: 10px 5px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: flex-start;
-    user-select: none;
+   .recent-opened-file-menu {
+      flex-grow: 1;
+      padding: 10px 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-start;
+      user-select: none;
 
-    .file-icon {
-      width: 15px;
-      height: 15px;
-      object-fit: contain;
-    }
-  }
+      .file-icon {
+         width: 15px;
+         height: 15px;
+         object-fit: contain;
+      }
 
-  .other-actions {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 10px;
-    div {
-       &:active {
-          transform: scale(0.9);
-       }
-    }
-  }
+      .file-name {
+         direction: rtl; // Reverse text direction
+         text-align: left; // Align text to the left (now the "start" of the reversed text)
+         white-space: nowrap; // Prevent text from wrapping
+         overflow: hidden; // Hide overflowing text
+         text-overflow: ellipsis; // Add "..." at the end (which is now the start)
+         width: 50dvw;
+      }
+   }
+
+   .other-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 10px;
+      div {
+         &:active {
+            transform: scale(0.9);
+         }
+      }
+   }
 }

@@ -26,19 +26,6 @@ $transition-speed: 0.3s;
    .sidebar__content {
       overflow-y: scroll;
       height: 100dvh;
-      .root-folder-name {
-         padding: 10px;
-         display: flex;
-         align-items: center;
-         gap: 10px;
-         border-bottom: 1px solid #2c2c2c;
-
-         div {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-         }
-      }
    }
 
    // Responsive adjustments for mobile

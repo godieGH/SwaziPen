@@ -1,106 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-
 import { FaRegFolder, FaFolder } from "react-icons/fa";
 import { MdFolder } from "react-icons/md";
-
 import "@scss/SideBar.scss";
-import FileTree from "@components/FileTree.jsx";
 
-const dummy = [
-   {
-      id: "root-1",
-      name: "My Project",
-      type: "folder",
-      children: [
-         { id: "readme-1", name: "README.md", type: "file" },
-         { id: "gitignore-1", name: ".gitignore", type: "file" },
-         { id: "package-1", name: "package.json", type: "file" },
-         {
-            id: "src-1",
-            name: "src",
-            type: "folder",
-            children: [
-               { id: "index-1", name: "index.js", type: "file" },
-               { id: "app-1", name: "App.js", type: "file" },
-               {
-                  id: "components-1",
-                  name: "components",
-                  type: "folder",
-                  children: [
-                     { id: "header-1", name: "Header.jsx", type: "file" },
-                     { id: "footer-1", name: "Footer.jsx", type: "file" },
-                     {
-                        id: "icons-1",
-                        name: "icons",
-                        type: "folder",
-                        children: [
-                           { id: "icon-1", name: "close.svg", type: "file" },
-                           { id: "icon-2", name: "open.svg", type: "file" }
-                        ]
-                     }
-                  ]
-               },
-               {
-                  id: "utils-1",
-                  name: "utils",
-                  type: "folder",
-                  children: [
-                     { id: "helpers-1", name: "helpers.js", type: "file" },
-                     { id: "format-1", name: "format.js", type: "file" }
-                  ]
-               }
-            ]
-         },
-         {
-            id: "public-1",
-            name: "public",
-            type: "folder",
-            children: [
-               { id: "index-html-1", name: "index.html", type: "file" },
-               { id: "favicon-1", name: "favicon.ico", type: "file" }
-            ]
-         },
-         {
-            id: "assets-1",
-            name: "assets",
-            type: "folder",
-            children: [
-               { id: "logo-1", name: "logo.png", type: "file" },
-               {
-                  id: "images-1",
-                  name: "images",
-                  type: "folder",
-                  children: [
-                     { id: "bg-1", name: "background.jpg", type: "file" },
-                     { id: "hero-1", name: "hero.png", type: "file" }
-                  ]
-               }
-            ]
-         },
-         {
-            id: "docs-1",
-            name: "docs",
-            type: "folder",
-            children: [
-               { id: "changelog-1", name: "CHANGELOG.md", type: "file" },
-               {
-                  id: "guides-1",
-                  name: "guides",
-                  type: "folder",
-                  children: [
-                     {
-                        id: "getting-started-1",
-                        name: "getting-started.md",
-                        type: "file"
-                     }
-                  ]
-               }
-            ]
-         }
-      ]
-   }
-];
+import SideBarContent from "@components/SideBarContent.jsx";
+
 
 const SideBar = ({ isOpen, onToggle }) => {
    const sidebarRef = useRef(null);
@@ -160,7 +65,10 @@ const SideBar = ({ isOpen, onToggle }) => {
          // - or if vertical movement is a large proportion of horizontal movement, reject
          const verticalLimitPx = 30; // absolute vertical tolerance
          const verticalToHorizontalRatio = 0.5; // allow vertical up to 50% of horizontal
-         if (absY > verticalLimitPx || absY > absX * verticalToHorizontalRatio) {
+         if (
+            absY > verticalLimitPx ||
+            absY > absX * verticalToHorizontalRatio
+         ) {
             // Not a valid low-range horizontal swipe — cancel dragging
             isHorizontalSwipe.current = false;
             setDragging(false);
@@ -232,12 +140,7 @@ const SideBar = ({ isOpen, onToggle }) => {
          >
             <div className="sidebar__content">
                {/* keep your existing content here */}
-               <FileTree
-                  fileTree={dummy}
-                  onChange={d => {
-                     console.log(d);
-                  }}
-               />
+               <SideBarContent onFileLoad={onToggle}/>
             </div>
          </aside>
       </>

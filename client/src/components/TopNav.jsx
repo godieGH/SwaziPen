@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import useLoadedFileStore from "@stores/loadedFile.js"
 import "@scss/TopNav.scss";
 import MenuIcon from "@components/MenuIcon.jsx";
 import { FileIcon } from "react-file-icon";
@@ -7,7 +8,8 @@ import SideBar from "@components/SideBar.jsx";
 
 function TopNav() {
    const [isSidebarOpen, setSidebarOpen] = useState(false);
-
+   const filename = useLoadedFileStore(state => state.filename)
+   
    const toggleSidebar = () => {
       setSidebarOpen(!isSidebarOpen);
    };
@@ -29,10 +31,10 @@ function TopNav() {
             </div>
 
             <div className="recent-opened-file-menu">
-               <div className="file-icon">
-                  <FileIcon extension=".swz" color="#4caf8e" />
-               </div>
-               <div>app.swz</div>
+               {/*<div className="file-icon">
+                  <FaFile />
+               </div>*/}
+               <div className="file-name">{filename}</div>
             </div>
 
             <div className="other-actions">

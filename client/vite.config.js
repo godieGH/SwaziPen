@@ -16,6 +16,8 @@ export default defineConfig({
       '@scss': path.resolve(__dirname, './src/scss'),
       '@components': path.resolve(__dirname, './src/components'),
       '@ace_customs': path.resolve(__dirname, './src/ace_customs'),
+      '@stores': path.resolve(__dirname, './src/stores'),
+      '@api': path.resolve(__dirname, './src/api'),
     },
   },
   optimizeDeps: { include: ['ace-builds'] }

@@ -1,0 +1,75 @@
+// Skeleton.scss
+// Variables you can override in your project or via :root
+$skel-bg: #252525;
+$skel-highlight: #1a1a1a;
+$skel-radius: 6px;
+$skel-text-height: 12px;
+$skel-duration-default: 1.2s;
+
+.skeleton,
+.skeleton__group .skeleton {
+  position: relative;
+  background: $skel-bg;
+  overflow: hidden;
+  color: transparent;
+  user-select: none;
+  // Ensure the element establishes a stacking context for ::after
+  isolation: isolate;
+}
+
+// Rectangle default
+.skeleton--rect {
+  border-radius: $skel-radius;
+}
+
+// Text line
+.skeleton--text-line {
+  display: block;
+  height: $skel-text-height;
+  border-radius: 4px;
+}
+
+// Circle (avatar)
+.skeleton--circle {
+  border-radius: 50%;
+  display: inline-block;
+}
+
+// Shimmer layer using ::after
+.skeleton--shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    $skel-highlight 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(0);
+  animation-name: skeleton-shimmer;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  // read CSS variable set inline by the component; fallback to default
+  animation-duration: var(--skeleton-duration, #{$skel-duration-default});
+  pointer-events: none;
+}
+
+// Keyframes
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+// Group wrapper for text lines
+.skeleton__group {
+  display: block;
+  width: 100%;
+}
