@@ -125,7 +125,7 @@ server.listen(PORT, () => {
   
   console.log(
     '  ' + chalk.gray('API docs:') + '  ' +
-    chalk.blue.underline(`https://swazipen.com/docs`)
+    chalk.blue.underline(`http://localhost:${PORT}/docs`)
   );
   
   console.log(
