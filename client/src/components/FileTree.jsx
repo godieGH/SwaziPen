@@ -469,250 +469,248 @@ function FileTree({
 
    // Actions
    function handleMenuAction(action) {
-      const menu = openMenu;
-      if (!menu) return;
-      const { id } = menu;
+   const menu = openMenu;
+   if (!menu) return;
+   const { id } = menu;
 
-      const meta = getNodeMeta(internalTree, id);
-      const node = meta ? meta.node : null;
+   const meta = getNodeMeta(internalTree, id);
+   const node = meta ? meta.node : null;
 
-      // Protect against acting on non-actionable node - defensive check
-      if (!isActionableNode(node)) {
+   if (!menu.parent && (action === "delete" || action === "copy" || action === "cut")) {
+      alert("You Cannot perform this action to this root dir.");
+      setOpenMenu(null);
+      return;
+   }
+
+   // Protect against acting on non-actionable node - defensive check
+   if (!isActionableNode(node)) {
+      setOpenMenu(null);
+      return;
+   }
+
+   const parent = meta ? meta.parent : null;
+   const path = meta ? meta.path : [];
+   const index = meta ? meta.index : -1;
+
+   if (action === "copy") {
+      // stash path + parent so paste can provide srcPath
+      setClipboard({
+         node: deepClone(node),
+         cut: false,
+         originalId: node.id,
+         path: deepClone(path),
+         parent: deepClone(parent)
+      });
+      notify("copy", {
+         node: deepClone(node),
+         parent: deepClone(parent),
+         path,
+         index
+      });
+   } else if (action === "cut") {
+      setClipboard({
+         node: deepClone(node),
+         cut: true,
+         originalId: node.id,
+         path: deepClone(path),
+         parent: deepClone(parent)
+      });
+      notify("cut", {
+         node: deepClone(node),
+         parent: deepClone(parent),
+         path,
+         index
+      });
+   } else if (action === "paste") {
+      if (!clipboard) {
+         setOpenMenu(null);
+         return;
+      }
+      const targetMeta = getNodeMeta(internalTree, id);
+      const targetNode = targetMeta ? targetMeta.node : null;
+
+      // Since paste button is only shown for folders in UI, targetNode should be a folder
+      if (!targetNode || targetNode.type !== "folder") {
+         // safety: do nothing
          setOpenMenu(null);
          return;
       }
 
-      const parent = meta ? meta.parent : null;
-      const path = meta ? meta.path : [];
-      const index = meta ? meta.index : -1;
+      targetNode.children = targetNode.children || [];
+      const destinationArray = targetNode.children;
 
-      if (action === "copy") {
-         setClipboard({ node: deepClone(node), cut: false });
-         notify("copy", {
-            node: deepClone(node),
-            parent: deepClone(parent),
-            path,
-            index
-         });
-      } else if (action === "cut") {
-         setClipboard({
-            node: deepClone(node),
-            cut: true,
-            originalId: node.id
-         });
-         notify("cut", {
-            node: deepClone(node),
-            parent: deepClone(parent),
-            path,
-            index
-         });
-      } else if (action === "paste") {
-         if (!clipboard) {
-            setOpenMenu(null);
-            return;
-         }
-         const targetMeta = getNodeMeta(internalTree, id);
-         const targetNode = targetMeta ? targetMeta.node : null;
-
-         // Since paste button is only shown for folders in UI, targetNode should be a folder
-         if (!targetNode || targetNode.type !== "folder") {
-            // safety: do nothing
-            setOpenMenu(null);
-            return;
-         }
-
-         targetNode.children = targetNode.children || [];
-         const destinationArray = targetNode.children;
-
-         if (clipboard.cut && clipboard.originalId) {
-            const movingMeta = getNodeMeta(internalTree, clipboard.originalId);
-            if (
-               movingMeta &&
-               movingMeta.node &&
-               movingMeta.node.type === "folder"
-            ) {
-               const descendantIds = [];
-               function buildIds(n) {
-                  descendantIds.push(n.id);
-                  if (n.children) n.children.forEach(buildIds);
-               }
-               buildIds(movingMeta.node);
-               const targetId = targetNode ? targetNode.id : null;
-               if (targetId && descendantIds.includes(targetId)) {
-                  window.alert(
-                     "Cannot move a folder into one of its own descendants."
-                  );
-                  setOpenMenu(null);
-                  return;
-               }
-            }
-         }
-
-         const toPaste = deepClone(clipboard.node);
-         if (clipboard.cut && clipboard.originalId) {
-            const removed = removeNode(internalTree, clipboard.originalId);
-            toPaste.id = clipboard.originalId;
-         } else {
-            toPaste.id = uuid();
-         }
-
-         insertNodeIntoArray(destinationArray, toPaste);
-         setInternalTree([...internalTree]);
-
-         // Expand ancestors + target folder so the new node is visible
-         // targetMeta.path is path from root to target folder; open them all
-         const ancestorIds = targetMeta ? targetMeta.path.map(p => p.id) : [];
-         expandFoldersByIds(ancestorIds);
-
-         // Highlight the newly pasted node briefly
-         setHighlightedId(toPaste.id);
-         if (highlightTimeoutRef.current)
-            clearTimeout(highlightTimeoutRef.current);
-         highlightTimeoutRef.current = setTimeout(() => {
-            setHighlightedId(null);
-         }, 2500);
-
-         // Prepare a path that ends with the pasted node
-         const newPath = (targetMeta ? targetMeta.path : []).concat({
-            id: toPaste.id,
-            name: toPaste.name,
-            type: toPaste.type
-         });
-
-         notify("paste", {
-            node: deepClone(toPaste),
-            parent: deepClone(targetNode),
-            path: newPath,
-            index: destinationArray.length - 1,
-            clipboard: deepClone(clipboard)
-         });
-
-         if (clipboard.cut) setClipboard(null);
-      } else if (action === "delete") {
-         if (!node) {
-            setOpenMenu(null);
-            return;
-         }
+      // Prevent moving a folder into its own descendant (same as before)
+      if (clipboard.cut && clipboard.originalId) {
+         const movingMeta = getNodeMeta(internalTree, clipboard.originalId);
          if (
-            node.type === "folder"
+            movingMeta &&
+            movingMeta.node &&
+            movingMeta.node.type === "folder"
          ) {
-            if (!window.confirm("Delete folder and all its contents?")) {
+            const descendantIds = [];
+            function buildIds(n) {
+               descendantIds.push(n.id);
+               if (n.children) n.children.forEach(buildIds);
+            }
+            buildIds(movingMeta.node);
+            const targetId = targetNode ? targetNode.id : null;
+            if (targetId && descendantIds.includes(targetId)) {
+               window.alert("Cannot move a folder into one of its own descendants.");
                setOpenMenu(null);
                return;
             }
-         }
-         if(node.type === "file") {
-            if (!window.confirm("Confirm to `delete` this file?")) {
-               setOpenMenu(null);
-               return;
-            }
-         }
-         const removed = removeNode(internalTree, node.id);
-         setInternalTree([...internalTree]);
-
-         // if we deleted the node that was cut, clear clipboard
-         if (clipboard && clipboard.cut && clipboard.originalId === node.id) {
-            setClipboard(null);
-         }
-
-         if (
-            selectedId &&
-            removed &&
-            (removed.id === selectedId ||
-               (removed.type === "folder" &&
-                  getNodeMeta([removed], selectedId)))
-         ) {
-            setSelectedId(null);
-         }
-         notify("delete", {
-            node: deepClone(removed),
-            parent: deepClone(parent),
-            path,
-            index
-         });
-      } else if (action === "newfile" || action === "newfolder") {
-         const targetMeta = getNodeMeta(internalTree, id);
-         const targetNode = targetMeta ? targetMeta.node : null;
-
-         // Only allow creating inside actionable folders
-         const parentForNew =
-            targetNode && targetNode.type === "folder"
-               ? targetNode
-               : menu.parent;
-         const container = parentForNew
-            ? (parentForNew.children = parentForNew.children || [])
-            : internalTree;
-
-         if (action === "newfile") {
-            const newNode = {
-               id: uuid(),
-               name: resolveName(container, "untitled.txt", "file"),
-               type: "file"
-            };
-            container.push(newNode);
-            setInternalTree([...internalTree]);
-            // open parent folder(s) to show new item
-            const ancestorIds = targetMeta
-               ? targetMeta.path.map(p => p.id)
-               : [];
-            if (parentForNew) expandFoldersByIds(ancestorIds);
-            // highlight
-            setHighlightedId(newNode.id);
-            if (highlightTimeoutRef.current)
-               clearTimeout(highlightTimeoutRef.current);
-            highlightTimeoutRef.current = setTimeout(
-               () => setHighlightedId(null),
-               2500
-            );
-            notify("newfile", {
-               node: deepClone(newNode),
-               parent: deepClone(parentForNew),
-               path: targetMeta
-                  ? targetMeta.path.concat({
-                       id: newNode.id,
-                       name: newNode.name,
-                       type: newNode.type
-                    })
-                  : [],
-               index: container.length - 1
-            });
-         } else {
-            const newNode = {
-               id: uuid(),
-               name: resolveName(container, "untitled", "folder"),
-               type: "folder",
-               children: []
-            };
-            container.push(newNode);
-            setInternalTree([...internalTree]);
-            const ancestorIds = targetMeta
-               ? targetMeta.path.map(p => p.id)
-               : [];
-            if (parentForNew) expandFoldersByIds(ancestorIds);
-            setHighlightedId(newNode.id);
-            if (highlightTimeoutRef.current)
-               clearTimeout(highlightTimeoutRef.current);
-            highlightTimeoutRef.current = setTimeout(
-               () => setHighlightedId(null),
-               2500
-            );
-            notify("newfolder", {
-               node: deepClone(newNode),
-               parent: deepClone(parentForNew),
-               path: targetMeta
-                  ? targetMeta.path.concat({
-                       id: newNode.id,
-                       name: newNode.name,
-                       type: newNode.type
-                    })
-                  : [],
-               index: container.length - 1
-            });
          }
       }
 
-      setOpenMenu(null);
+      // Keep a copy of srcPath from clipboard (may be null if not provided)
+      const srcPath = clipboard.path ? deepClone(clipboard.path) : null;
+
+      const toPaste = deepClone(clipboard.node);
+      if (clipboard.cut && clipboard.originalId) {
+         // remove original from tree (move)
+         const removed = removeNode(internalTree, clipboard.originalId);
+         // keep original id when moving
+         toPaste.id = clipboard.originalId;
+      } else {
+         // copy: new id
+         toPaste.id = uuid();
+      }
+
+      insertNodeIntoArray(destinationArray, toPaste);
+      setInternalTree([...internalTree]);
+
+      // Expand ancestors + target folder so the new node is visible
+      const ancestorIds = targetMeta ? targetMeta.path.map(p => p.id) : [];
+      expandFoldersByIds(ancestorIds);
+
+      // Highlight the newly pasted node briefly
+      setHighlightedId(toPaste.id);
+      if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+      highlightTimeoutRef.current = setTimeout(() => {
+         setHighlightedId(null);
+      }, 2500);
+
+      // Prepare destPath: path from root to newly pasted node
+      const destPath = (targetMeta ? targetMeta.path : []).concat({
+         id: toPaste.id,
+         name: toPaste.name,
+         type: toPaste.type
+      });
+
+      const operation = clipboard.cut ? "cut" : "copy";
+
+      notify("paste", {
+         node: deepClone(toPaste),
+         parent: deepClone(targetNode),
+         path: deepClone(destPath),
+         index: destinationArray.length - 1,
+         clipboard: deepClone(clipboard),
+
+         // new fields for consumers / server syncing:
+         operation, // "copy" | "cut"
+         srcPath,   // original path array (root -> source node) or null
+         destPath   // destination path array (root -> pasted node)
+      });
+
+      if (clipboard.cut) setClipboard(null);
+   } else if (action === "delete") {
+      if (!node) {
+         setOpenMenu(null);
+         return;
+      }
+      if (node.type === "folder") {
+         if (!window.confirm("Delete folder and all its contents?")) {
+            setOpenMenu(null);
+            return;
+         }
+      }
+      if (node.type === "file") {
+         if (!window.confirm("Confirm to `delete` this file?")) {
+            setOpenMenu(null);
+            return;
+         }
+      }
+      const removed = removeNode(internalTree, node.id);
+      setInternalTree([...internalTree]);
+
+      // if we deleted the node that was cut, clear clipboard
+      if (clipboard && clipboard.cut && clipboard.originalId === node.id) {
+         setClipboard(null);
+      }
+
+      if (
+         selectedId &&
+         removed &&
+         (removed.id === selectedId ||
+            (removed.type === "folder" && getNodeMeta([removed], selectedId)))
+      ) {
+         setSelectedId(null);
+      }
+      notify("delete", {
+         node: deepClone(removed),
+         parent: deepClone(parent),
+         path,
+         index
+      });
+   } else if (action === "newfile" || action === "newfolder") {
+      const targetMeta = getNodeMeta(internalTree, id);
+      const targetNode = targetMeta ? targetMeta.node : null;
+
+      // Only allow creating inside actionable folders
+      const parentForNew =
+         targetNode && targetNode.type === "folder" ? targetNode : menu.parent;
+      const container = parentForNew ? (parentForNew.children = parentForNew.children || []) : internalTree;
+
+      if (action === "newfile") {
+         const newNode = {
+            id: uuid(),
+            name: resolveName(container, "untitled.txt", "file"),
+            type: "file"
+         };
+         container.push(newNode);
+         setInternalTree([...internalTree]);
+         // open parent folder(s) to show new item
+         const ancestorIds = targetMeta ? targetMeta.path.map(p => p.id) : [];
+         if (parentForNew) expandFoldersByIds(ancestorIds);
+         // highlight
+         setHighlightedId(newNode.id);
+         if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+         highlightTimeoutRef.current = setTimeout(() => setHighlightedId(null), 2500);
+         notify("newfile", {
+            node: deepClone(newNode),
+            parent: deepClone(parentForNew),
+            path: targetMeta
+               ? targetMeta.path.concat({ id: newNode.id, name: newNode.name, type: newNode.type })
+               : [],
+            index: container.length - 1
+         });
+      } else {
+         const newNode = {
+            id: uuid(),
+            name: resolveName(container, "untitled", "folder"),
+            type: "folder",
+            children: []
+         };
+         container.push(newNode);
+         setInternalTree([...internalTree]);
+         const ancestorIds = targetMeta ? targetMeta.path.map(p => p.id) : [];
+         if (parentForNew) expandFoldersByIds(ancestorIds);
+         setHighlightedId(newNode.id);
+         if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+         highlightTimeoutRef.current = setTimeout(() => setHighlightedId(null), 2500);
+         notify("newfolder", {
+            node: deepClone(newNode),
+            parent: deepClone(parentForNew),
+            path: targetMeta
+               ? targetMeta.path.concat({ id: newNode.id, name: newNode.name, type: newNode.type })
+               : [],
+            index: container.length - 1
+         });
+      }
    }
+
+   setOpenMenu(null);
+}
 
    // commit rename (called by FileTreeNode)
    function commitRename(nodeId, newName) {
@@ -807,13 +805,13 @@ function FileTree({
                   <div className="modal-menu__actions">
                      {/* Note: top-level UI will only show menus for actionable nodes,
                          but we keep defensive checks in handleMenuAction */}
-                     <button onClick={() => handleMenuAction("delete")}>
-                        Delete
+                     <button style={{color:!openMenu.parent?"grey":null}} onClick={() => handleMenuAction("delete")}>
+                        Delete 
                      </button>
-                     <button onClick={() => handleMenuAction("copy")}>
+                     <button style={{color:!openMenu.parent?"grey":null}} onClick={() => handleMenuAction("copy")}>
                         Copy
                      </button>
-                     <button onClick={() => handleMenuAction("cut")}>
+                     <button style={{color:!openMenu.parent?"grey":null}} onClick={() => handleMenuAction("cut")}>
                         Cut
                      </button>
 

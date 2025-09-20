@@ -18,8 +18,10 @@ program
 program
   .argument("[path]", "path to project folder (defaults to current folder)")
   .option("-p, --port <port>", "server will run on custom port")
+  .option("-q, --quiet", "server will run on quietly, no logs (requests, file operation logs etc), only errors")
   .action(async (source, options) => {
     try {
+      process.stdout.write('\x1Bc');
       let projectPath;
       if (!source) {
         const ans = await inquirer.prompt([
@@ -46,7 +48,6 @@ program
           process.exit(1);
         }
       }
-
       let port = options.port ? Number(options.port) : undefined;
       if (options.port && (isNaN(port) || port <= 0 || port > 65535)) {
         console.error(chalk.red("Error:") + ` Invalid port "${options.port}".`);
@@ -86,7 +87,7 @@ program
       const interval = setInterval(() => {
         const ch = spinnerChars[spinnerIndex % spinnerChars.length];
         const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-        process.stdout.write(`\r${chalk.green(ch)} Scanning... ${scannedCount} files  (${elapsed}s)`);
+        process.stdout.write(`\r${chalk.green(ch)} Scanning... ${scannedCount} items in (${elapsed}s)`);
         spinnerIndex++;
       }, frameInterval);
 
@@ -125,8 +126,7 @@ program
          /\.swp$/,
          /\.(png|jpg|jpeg|gif|ico|svg|mp4|mov|mp3|wav)$/
       ] });
-
-      startServer(fileTree, port, projectPath, watcher);
+      startServer(fileTree, port, projectPath, watcher, options);
     } catch (err) {
       console.error(chalk.red("Unhandled error: "), chalk.grey(err.message));
       process.exit(1);

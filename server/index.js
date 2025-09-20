@@ -19,11 +19,12 @@ app.use(
   })
 );
 app.use(cors());
-app.use(morgan("dev"));
 app.use(helmet());
 
-function startServer(initialFileTree, prt = PORT, scannedWD, watcher) {
+function startServer(initialFileTree, prt = PORT, scannedWD, watcher, {quiet}) {
   PORT = prt;
+  
+  if(!quiet) app.use(morgan("dev"))
 
   // create HTTP server from express app
   const server = http.createServer(app);
@@ -95,6 +96,7 @@ function startServer(initialFileTree, prt = PORT, scannedWD, watcher) {
 
   // middleware to inject current tree and io on each request
   app.use(async (req, res, next) => {
+    if(quiet) req.quiet = quiet
     req.scannedWD = scannedWD;
     req.initialFileTree = initialFileTree;
     req.io = io;
