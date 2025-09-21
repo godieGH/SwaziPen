@@ -45,7 +45,7 @@ async function scanDirectory(dirPath, basePath, rootPath = basePath, opts = { fo
     if (typeof opts.onNode === 'function') opts.onNode(node);
     return node;
   }
-
+const absolutePath = path.resolve(dirPath);
   const isDirectory = stats.isDirectory();
   const name = path.basename(dirPath);
   const relToRoot = path.relative(rootPath, dirPath) || '.';
@@ -57,6 +57,7 @@ async function scanDirectory(dirPath, basePath, rootPath = basePath, opts = { fo
     name,
     type: isDirectory ? 'folder' : 'file',
     path: relativePathForNode,
+    absPath: absolutePath
   };
 
   if (isDirectory) {

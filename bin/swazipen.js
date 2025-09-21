@@ -105,7 +105,7 @@ program
       process.stdout.write(`\r${chalk.green('✔')} Scan completed. ${scannedCount} items in ${totalTime}s\n`);
 
       console.log(chalk.green.bold("→") + " " + "Starting server...");
-      const watcher = chokidar.watch(projectPath, { /* your existing options */ persistent: true, ignoreInitial: true, depth: undefined, followSymlinks: false, ignored: [
+      const watcher = chokidar.watch(projectPath, { persistent: true, ignoreInitial: true, depth: undefined, followSymlinks: false, ignored: [
          /node_modules/,
          /(?:^|[\/\\])\.git/,
          /(?:^|[\/\\])\.svn/,

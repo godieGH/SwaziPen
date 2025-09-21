@@ -36,7 +36,19 @@
          overflow: hidden; // Hide overflowing text
          text-overflow: ellipsis; // Add "..." at the end (which is now the start)
          width: 50dvw;
+         
+         .deleted-badge {
+            padding: 0 10px;
+            color: red;
+            font-size: 10px;
+         }
       }
+      .file-not-saved-badge {
+            padding: 3px;
+            border-radius: 50px ;
+            background: #4ae462;
+            margin-top: 5px ;
+         }
    }
 
    .other-actions {

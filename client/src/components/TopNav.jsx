@@ -1,18 +1,40 @@
 import React, { useState } from "react";
 import useLoadedFileStore from "@stores/loadedFile.js"
 import "@scss/TopNav.scss";
+import api from "@api/axios.js"
 import MenuIcon from "@components/MenuIcon.jsx";
 import { FileIcon } from "react-file-icon";
 import { FaSearch, FaPlay } from "react-icons/fa";
 import SideBar from "@components/SideBar.jsx";
+import Terminal from "@components/Terminal.jsx"
 
 function TopNav() {
    const [isSidebarOpen, setSidebarOpen] = useState(false);
    const filename = useLoadedFileStore(state => state.filename)
+   const fileDeleted = useLoadedFileStore(state => state.deleted)
+   const fileNotSaved = useLoadedFileStore(state => state.notsaved)
+   
+   const [terminal, setTerminal] = useState(false)
+   const [terminalRes, setTerminalRes] = useState("")
+   const [terminalError, setTerminalError] = useState(null)
    
    const toggleSidebar = () => {
       setSidebarOpen(!isSidebarOpen);
    };
+   
+   async function handleExecute() {
+      try {
+         const { data } = await api.post("/api/execute", {code: useLoadedFileStore.getState().content, filename: useLoadedFileStore.getState().filename})
+         navigator.vibrate(80)
+         if(data.output.stderr) setTerminalError(data.output.stderr)
+         if(data.output.stdout) setTerminalRes(data.output.stdout)
+         setTerminal(true)
+      } catch(err) {
+         console.error(err.message)
+      }
+   }
+   
+   
 
    return (
       <>
@@ -31,19 +53,32 @@ function TopNav() {
             </div>
 
             <div className="recent-opened-file-menu">
-               {/*<div className="file-icon">
-                  <FaFile />
-               </div>*/}
-               <div className="file-name">{filename}</div>
+               {fileNotSaved && <div className="file-not-saved-badge"></div>}
+               <div className="file-name">
+                  {filename}
+                  {fileDeleted && <span className="deleted-badge">[deleted]</span>}
+               </div>
             </div>
 
             <div className="other-actions">
                <div>
-                  <FaSearch color="#9e9e9e" />
+                  {/*<FaSearch color="#9e9e9e" />*/}
                </div>
                <div>
-                  <FaPlay />
+                  <FaPlay onClick={handleExecute}/>
                </div>
+            </div>
+            <div className="terminal-container">
+               <Terminal isOpen={terminal} onClose={() => {
+                  setTerminal(false)
+                  setTerminalRes("")
+                  setTerminalError(null)
+               }}>
+                  {terminalError ? 
+                     <div style={{
+                        color: "#9c3c3c",
+                     }}>{terminalError}</div> : terminalRes}
+               </Terminal>
             </div>
          </div>
       </>

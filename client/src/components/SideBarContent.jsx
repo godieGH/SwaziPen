@@ -111,6 +111,7 @@ function SideBarContent({ onFileLoad }) {
    };
    const handleDelete = async payload => {
       try {
+        //useLoadedFileStore.getState().reset()
          await api.post("/api/remove/dir/file/", payload);
       } catch (e) {
          window.alert(e.message);
@@ -118,6 +119,7 @@ function SideBarContent({ onFileLoad }) {
    };
    const handleRename = async payload => {
       try {
+         //useLoadedFileStore.getState().reset()
          await api.post("/api/rename/dir/file/", payload);
       } catch (e) {
          window.alert(e.message);

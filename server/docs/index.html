@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SwaziLang — Quick Reference (fixed)</title>
+  <style>
+    :root{
+      --bg:#0f1620;
+      --panel:#0b1220;
+      --muted:#9aa6b2;
+      --accent:#7bd389;
+      --code-bg:#0b1020;
+      --card:#0f1720;
+      --glass: rgba(255,255,255,0.02);
+      --shadow: 0 6px 18px rgba(2,6,23,0.6);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071022 0%, #081528 60%);color:#e6eef6;}
+    .app{display:grid;grid-template-columns:300px 1fr;gap:20px;padding:20px;max-width:1200px;margin:0 auto;}
+    .sidebar{background:var(--glass);backdrop-filter: blur(6px);border-radius:12px;padding:14px;height:calc(100vh - 40px);overflow:auto;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.03);position:sticky;top:20px;}
+    .brand{font-weight:700;color:var(--accent);font-size:18px;margin-bottom:12px;}
+    .toc a{display:block;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:6px;margin:6px 0;}
+    .toc a:hover{background:rgba(123,211,137,0.06);color:var(--accent);}
+    main{height:calc(100vh - 40px);overflow:auto;padding:18px;background:transparent;}
+    .card{background:var(--card);padding:18px;border-radius:10px;margin-bottom:18px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.03);}
+    h1,h2,h3{color:#dff7e0;margin:0 0 12px 0;}
+    h1{font-size:26px;}
+    h2{font-size:20px;margin-top:6px;}
+    p{color:var(--muted);line-height:1.5;}
+    pre{background:var(--code-bg);padding:12px;border-radius:8px;overflow:auto;border:1px solid rgba(255,255,255,0.02);white-space:pre;word-break:normal;max-width:100%;}
+    code{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace; font-size:13px; color:#e6eef6;}
+    /* token classes */
+    .kw { color:#7bd389; font-weight:600; }      /* keywords */
+    .builtin { color:#ffd86b; font-weight:500; } /* built-ins */
+    .op { color:#c6c6ff; }                       /* operators */
+    .str { color:#ffb86b; }                      /* strings */
+    .num { color:#ff7ab6; }                      /* numbers */
+    .comment { color:#6b7280; font-style:italic; } /* comments */
+    .ident { color:#8bd0ff; }                    /* identifiers */
+    .section-note{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;margin:8px 0;color:var(--muted);}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);color:var(--muted);cursor:pointer;font-size:13px;}
+    .btn:active{transform:translateY(1px);}
+    .copy-btn{float:right;margin-top:-6px;}
+    .small{font-size:13px;color:var(--muted);}
+    a.link{color:var(--accent);text-decoration:none;}
+    /* responsive: on narrow screens, put sidebar on top and make it horizontal-ish */
+    @media (max-width:900px){
+      .app{grid-template-columns:1fr;padding:12px;}
+      .sidebar{height:auto;position:relative;order:1;padding:10px;display:block;}
+      main{order:2;padding:12px;height:auto;}
+      .toc{display:flex;flex-wrap:wrap;gap:6px;}
+      .toc a{padding:6px 8px;margin:4px 2px;border-radius:6px;font-size:13px;}
+      pre{white-space:pre-wrap;word-break:break-word;}
+    }
+
+    /* small improvements for accessibility */
+    .toc a:focus{outline:2px solid rgba(123,211,137,0.18);outline-offset:2px;}
+    button.btn{background:none;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="sidebar card" aria-label="Table of contents">
+      <div class="brand">SwaziLang — Quick Reference</div>
+      <nav class="toc" role="navigation">
+        <a href="#intro">Introduction</a>
+        <a href="#getting-started">Getting started (SwaziPen)</a>
+        <a href="#syntax">Syntax overview</a>
+        <a href="#variables">Variables & constants</a>
+        <a href="#comments">Comments</a>
+        <a href="#functions">Functions (`kazi`) & Methods (`tabia`)</a>
+        <a href="#control">Control flow (kama, vinginevyo)</a>
+        <a href="#loops">Loops (kwa, wakati, fanya)</a>
+        <a href="#operators">Operators & boolean</a>
+        <a href="#io">IO (chapisha, andika)</a>
+        <a href="#objects">Objects & Classes</a>
+        <a href="#arrays">Arrays & Collections</a>
+        <a href="#async">Async (subiri)</a>
+        <a href="#modules">Modules (tumia, ruhusu)</a>
+        <a href="#errors">Error handling (jaribu, kamata, kisha)</a>
+        <a href="#examples">Examples & full sample</a>
+        <a href="#cheatsheet">Cheatsheet</a>
+      </nav>
+      <div style="height:12px"></div>
+      <div class="small">Tip: Tap any item to jump to that section. Use the copy button in code blocks.</div>
+    </aside>
+
+    <main>
+      <article class="card" id="intro">
+        <h1>SwaziLang — Single-page Reference for SwaziPen</h1>
+        <p class="small">This single-page documentation is intended to be used inside <strong>SwaziPen</strong> (the browser IDE). Keep it open in a tab or pin it inside the IDE for quick lookup.</p>
+        <p class="section-note">This page provides a concise syntax reference, examples, and a full sample. It highlights common keywords and offers copy buttons for examples.</p>
+      </article>
+
+      <section class="card" id="getting-started">
+        <h2>Getting started (SwaziPen)</h2>
+        <p>Open SwaziPen and add this file to the project (or open as "Documentation"). The editor supports code editing and live preview. Use the command palette (or CLI) to run files using the <code>swazi</code> executable when you have it available in your PATH.</p>
+        <p class="small">Default execution button in SwaziPen will call <code>swazi &lt;file&gt;</code> (if configured). See the IDE settings to point to your local <code>swazi</code> binary.</p>
+      </section>
+
+      <section class="card" id="syntax">
+        <h2>Syntax overview</h2>
+        <p>SwaziLang uses a hybrid style — many constructs look like C/JavaScript, while some blocks support Python-like indentation. The most important keywords:</p>
+        <pre><code class="language-swazilang">kazi, data, thabiti, rudisha, ruhusu, kama, vinginevyo, kwa, wakati, fanya, tabia, muundo, unda, tumia, subiri, onesha, jaribu, kamata, kisha</code></pre>
+      </section>
+
+      <section class="card" id="variables">
+        <h2>Variables & constants</h2>
+        <p>Declare variables using <code>data</code>. Use <code>thabiti</code> to mark constants.</p>
+        <pre><code class="language-swazilang">data x = 5;
+data thabiti a = 100;
+data b = &quot;hello world&quot;;
+data c = kweli;  // boolean true
+data d = sikweli; // boolean false</code></pre>
+      </section>
+
+      <section class="card" id="comments">
+        <h2>Comments</h2>
+        <p>Single and multi-line comments are supported:</p>
+        <pre><code class="language-swazilang">// single line comment
+/* multi-line comment */
+</code></pre>
+      </section>
+
+      <section class="card" id="functions">
+        <h2>Functions (<code>kazi</code>) & Methods (<code>tabia</code>)</h2>
+        <p>Define functions with <code>kazi</code>. There are two styles: C-style block with braces and Pythonic with indentation and a colon.</p>
+        <pre><code class="language-swazilang">// C-like function
+kazi add a, b, c {
+  rudisha (a + b + c)
+}
+
+// Python-like function (indented body)
+kazi mul a, b :
+  rudisha (a * b)</code></pre>
+        <p>Return values with <code>rudisha</code>. Methods inside objects use <code>tabia</code>.</p>
+        <pre><code class="language-swazilang">tabia greet name {
+  chapisha &quot;hello, &quot; + $.name
+  rudisha $
+}</code></pre>
+      </section>
+
+      <section class="card" id="control">
+        <h2>Control flow (if / else)</h2>
+        <p>C-like and Pythonic styles are supported.</p>
+        <pre><code class="language-swazilang">// C-style
+kama cond1 {
+  // body
+} vinginevyo kama cond2 {
+  // else-if
+} vinginevyo {
+  // else
+}
+
+// Python-style
+kama cond :
+  // body
+vinginevyo:
+  // else body</code></pre>
+      </section>
+
+      <section class="card" id="loops">
+        <h2>Loops (for, while, do)</h2>
+        <p>Kwa is the for loop. It supports C-style and a colon style. <code>wakati</code> is while. <code>fanya … wakati</code> is do-while.</p>
+        <pre><code class="language-swazilang">// C-style for
+kwa(a=0;a&lt;num;a++) { /* ... */ }
+
+// Colon style (indented)
+kwa(a=0;a&lt;num;a++):
+  // body
+
+// while
+wakati cond { /* ... */ }
+wakati cond :
+  // body
+
+// do-while
+fanya { /* ... */ } wakati cond
+fanya:
+  // body
+wakati cond
+</code></pre>
+      </section>
+
+      <section class="card" id="operators">
+        <h2>Operators & boolean</h2>
+        <p>Common operators include <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, comparisons, and boolean keywords:</p>
+        <pre><code class="language-swazilang">data p = x sawa 5     // ==
+data p = x sisawa 5    // !=
+data p = (x na a) au (x &amp;&amp; p) // na = &amp;&amp;, au = ||</code></pre>
+        <p>Ternary:</p>
+        <pre><code class="language-swazilang">data f = cond ? conc : alt</code></pre>
+      </section>
+
+      <section class="card" id="io">
+        <h2>Input / Output</h2>
+        <pre><code class="language-swazilang">chapisha &quot;hello world&quot;    // prints with newline
+chapisha(&quot;hello&quot;,&quot;world&quot;)
+andika 5                   // print without newline
+andika(4,&quot;text&quot;)</code></pre>
+      </section>
+
+      <section class="card" id="objects">
+        <h2>Objects & Classes</h2>
+        <p>Objects use literals similar to JS. <code>muundo</code> defines classes. Use <code>unda</code> to create instances.</p>
+        <pre><code class="language-swazilang">data ob = {
+  &quot;name&quot;: &quot;John Doe&quot;,
+  &quot;age&quot;: 30,
+  tabia getName {
+    rudisha $.name
+  }
+}
+
+// Class definition
+muundo ClassName rithi ClassName {
+  a = 6;
+  @privateVal;
+  &amp;k = 5; // static member
+
+  ClassName arg, arg {
+    $.a = arg;
+  }
+
+  ~ClassName arg {
+    // destructor
+  }
+
+  tabia thabiti getter {
+      rudisha $
+  }
+}
+
+// create instance
+data obj = unda ClassName();
+obj.a = 5
+obj.ccc(arg)
+data k = ClassName::k // static access</code></pre>
+      </section>
+
+      <section class="card" id="arrays">
+        <h2>Arrays & Collections</h2>
+        <pre><code class="language-swazilang">data arr = [a, b, c, d];
+arr[0] = &quot;A&quot;
+data set = unda Seti({a, b, c})
+data map = unda Ramani()</code></pre>
+      </section>
+
+      <section class="card" id="async">
+        <h2>Async & Await (<code>subiri</code>)</h2>
+        <p>Using <code>subiri</code> inside a function marks it async. You can await calls with <code>subiri</code>.</p>
+        <pre><code class="language-swazilang">kazi fname arg :
+  subiri data a = call()
+  subiri call()</code></pre>
+      </section>
+
+      <section class="card" id="modules">
+        <h2>Modules (import / export)</h2>
+        <pre><code class="language-swazilang">tumia * kutoka &quot;modyula&quot;
+tumia aaa, {a, b} kutoka &quot;modyula&quot;
+tumia ggg kama b kutoka &quot;modyula&quot;
+
+// exports (at end of file)
+ruhusu { p: ppp, g: d }   // named exports
+ruhusu ppp                // default export</code></pre>
+      </section>
+
+      <section class="card" id="errors">
+        <h2>Error handling</h2>
+        <pre><code class="language-swazilang">jaribu {
+  onesha unda Makosa(&quot;...&quot;)
+} kamata(err) {
+  // handle error
+} kisha {
+  // finally
+}</code></pre>
+      </section>
+
+      <section class="card" id="examples">
+        <h2>Examples & Full Sample</h2>
+        <p class="small">Below is a full annotated sample (the original language sample). Use it as a reference and paste into SwaziPen to test.</p>
+        <div style="position:relative">
+          <button class="btn copy-btn" data-target="full-sample" aria-controls="full-sample" aria-label="Copy full sample">Copy sample</button>
+        </div>
+        <!-- NOTE: the code block content below is safe (browser will see escaped fallback first),
+             the highlighter will build the final highlighted DOM using textContent so the original
+             characters such as '<' or '&' are preserved in data-raw and on copy. -->
+        <pre id="full-sample"><code class="language-swazilang">// language: SwaziLang, ext: .ls | .swz
+
+// single-line comment
+data x = 5;
+data thabiti a = 100;
+data b = &quot;hello world&quot;;
+data c = kweli;
+data d = sikweli;
+
+// c-like body
+kazi ddd arg1, arg2, arg3 {
+   // single-line comment too
+   // return statement
+   rudisha val
+}
+
+// python like functions
+kazi ccc arg1, arg2 :
+   /*
+   indented body
+   */
+   rudisha (arg2 + arg2)
+
+ddd(a, b, c, arg1, &quot;hello world&quot;) // function calls
+
+/*
+   multi-line comment
+   line
+   line
+*/
+
+// c-style ifStatement
+kama cond1 {
+   // body
+} vinginevyo kama cond2 {
+   // else-if body
+} vinginevyo {
+   // else body
+}
+
+// pythonic style indented ifStatement
+kama cond :
+   //body
+   //body
+vinginevyo:
+   // else body
+
+kwa(a=0;a&lt;num;a++) {} // c-style for loop
+//pythonic style too
+kwa(a=0;a&lt;num;a++):
+   // body
+
+wakati cond {} // c-style while loop
+wakati cond :
+   // pythonic style
+
+fanya {
+   // c-style do-while
+} wakati cond
+//pythonic style
+fanya:
+   // body
+wakati cond
+
+//ternary
+data f = cond ? conc : alt
+
+// operational keywords
+data p = x sawa 5 // return kweli assign it to p if x == 5
+data p = x sisawa 5 // same as !=
+data p = (x na a) au (x &amp;&amp; p) // na = &amp;&amp;, au = || , na and au are keywords
+
+// printing
+chapisha &quot;hello world&quot; // print built-ins
+chapisha(&quot;hello world&quot;, &quot;hello world&quot;)
+andika 5 // print without newline
+andika(4, &quot;text&quot;)
+
+// object data types like JS objects
+data ob = {
+   &quot;name&quot;: &quot;John Doe&quot;,
+   &quot;age&quot;: 30,
+   &quot;isMarried&quot;: kweli,
+   tabia ggg arg1, arg2 {
+      // body
+   }
+   tabia thabiti fff arg1 {
+      $.name = arg1 // this method is a getter; changing protected members is not allowed
+      rudisha $ // return self for chaining
+   }
+}
+
+ob.name = &quot;Jane Doe&quot;
+ob[&quot;name&quot;] = &quot;Jane Doe&quot;
+
+data b = ob.ggg 
+b()
+ob.fff(a, b, c)
+
+// arrays
+data arr = [a, b, c, d];
+arr[0] = &quot;A&quot;
+arr[0] = kweli
+
+// classes
+muundo ClassName rithi ClassName {
+   a = 6;
+   b;
+   @f;
+   &amp;k = 5;
+
+   ClassName arg, arg {
+      $.a = arg;
+   }
+
+   ~ClassName arg, arg {
+      // destructor
+   }
+
+   tabia fff arg, arg2 {
+      // body
+   }
+   tabia @fff {
+      // private method
+   }
+   tabia &amp;fff {
+      // static method
+   }
+   tabia &amp;@fff {} // static + private
+
+   tabia thabiti fff arg1, arg2, {
+      // getter only; cannot modify members here
+      rudisha $
+   }
+}
+
+data obj = unda ClassName();
+obj.a = 5
+obj.ccc(arg)
+data k = ClassName::k
+data fn = ClassName::fff
+fn(arg)
+
+futa obj
+
+// unary checks
+data type = AINAYA sikweli
+data type = AINAYA 30
+data type = AINAYA &quot;hello world&quot;
+data b = 60 NINAMBARI
+data c = &quot;hello world&quot; NINENO
+
+// async
+kazi fname arg, arg2:
+  subiri call()
+  subiri data a = call()
+
+// modules
+tumia * kutoka &quot;modyula&quot;
+tumia aaa, {a, b, c} kutoka &quot;modyula&quot;
+tumia ggg kama b  kutoka &quot;modyula&quot;
+
+// exports
+kazi ppp arg {
+}
+ruhusu {ppp}
+</code></pre>
+      </section>
+
+      <section class="card" id="cheatsheet">
+        <h2>Cheatsheet</h2>
+        <p class="small">Common keywords and quick reminders.</p>
+        <pre><code class="language-swazilang">data - declare variable
+thabiti - const
+kazi - function
+tabia - method
+muundo - class / struct
+unda - create instance (like new)
+rudisha - return
+ruhusu - export
+tumia - import
+kwa - for
+wakati - while
+fanya - do
+kama - if
+vinginevyo - else / else if
+subiri - await
+onesha - throw
+jaribu - try
+kamata - catch
+kisha - finally</code></pre>
+      </section>
+
+      <footer class="card small">
+        <div>Created for <strong>SwaziPen</strong>. Keep this file inside your project for quick reference.</div>
+      </footer>
+    </main>
+  </div>
+
+<script>
+(function(){
+  // ---- configuration: keyword / builtin / operator sets ----
+  const KEYWORDS = new Set([
+    "kazi","data","thabiti","rudisha","ruhusu",
+    "kama","vinginevyo","kwa","wakati","fanya",
+    "tabia","muundo","unda","tumia","subiri",
+    "onesha","jaribu","kamata","kisha","futa",
+    "rithi","~","AINAYA","NINAMBARI","NINENO",
+    "NIBOOLEAN","NIKAZI","NILISTI"
+  ]);
+  const BUILTINS = new Set([
+    "chapisha","andika","Seti","Ramani","Kamusi",
+    "Makosa","MakosaYaAina","MakosaYaMrejeo","MakosaYaMpangilio"
+  ]);
+  const OPS = new Set([
+    "sawa","sisawa","na","au","&&","||","==","!=",
+    "?","?:", ":", "::","+","-","*","/","<",">","<=",">="
+  ]);
+  const LITERALS = new Set(["kweli","sikweli"]); // booleans / literal tokens
+
+  // ---- helper: escape HTML entities for safe fallback rendering ----
+  function escapeHtmlForAttr(str){
+    if(str == null) return '';
+    return str.replace(/&/g,'&amp;')
+              .replace(/</g,'&lt;')
+              .replace(/>/g,'&gt;')
+              .replace(/"/g,'&quot;')
+              .replace(/'/g,'&#39;');
+  }
+
+  // ---- token regex (keeps whitespace/newlines, strings, comments, numbers, identifiers) ----
+  const tokenRe = /\/\*[\s\S]*?\*\/|\/\/[^\n\r]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(\.\d+)?\b|::|&&|\|\||==|!=|<=|>=|\?|\:|[A-Za-z_@&][A-Za-z0-9_@&-]*|\s+|[^\s]/g;
+
+  function classifyToken(tok){
+    if(!tok) return {type:'ws', text:tok};
+    if(tok.startsWith('/*') || tok.startsWith('//')) return {type:'comment', text:tok};
+    if(tok[0] === '"' || tok[0] === "'") return {type:'str', text:tok};
+    if(/^\d+(\.\d+)?$/.test(tok)) return {type:'num', text:tok};
+    if(/\s+/.test(tok)) return {type:'ws', text:tok};
+    if(KEYWORDS.has(tok)) return {type:'kw', text:tok};
+    if(BUILTINS.has(tok)) return {type:'builtin', text:tok};
+    if(LITERALS.has(tok)) return {type:'str', text:tok}; // boolean words colored like strings/literals
+    if(OPS.has(tok)) return {type:'op', text:tok};
+    if(/^(::|&&|\|\||==|!=|<=|>=|\?|\:)$/.test(tok)) return {type:'op', text:tok};
+    if(/^[\[\]\(\)\{\},;\.\+\-\*\/=%<>!&|~@]$/.test(tok)) return {type:'op', text:tok};
+    return {type:'ident', text:tok};
+  }
+
+  function buildHighlightedDOM(raw){
+    const frag = document.createDocumentFragment();
+    tokenRe.lastIndex = 0; // reset regex
+    let m;
+    while((m = tokenRe.exec(raw)) !== null){
+      const tok = m[0];
+      const cls = classifyToken(tok);
+      if(cls.type === 'ws'){
+        // whitespace (spaces, tabs, newlines) -> keep as text node so pre formatting is preserved
+        frag.appendChild(document.createTextNode(tok));
+      } else {
+        const span = document.createElement('span');
+        span.className = cls.type; // e.g. 'kw', 'ident', 'str'
+        // use textContent (not innerHTML) to avoid HTML injection and preserve tokens
+        span.textContent = cls.text;
+        frag.appendChild(span);
+      }
+    }
+    return frag;
+  }
+
+  function processCodeBlock(codeEl){
+    // keep original raw text for copy/download
+    const raw = codeEl.textContent || '';
+
+    // 1) Create an escaped HTML fallback string so the block is safe even before highlighting
+    const escaped = escapeHtmlForAttr(raw);
+
+    // set a data attribute so the escaped HTML is available if needed
+    codeEl.setAttribute('data-escaped', escaped);
+
+    // set innerHTML to the escaped content as a safe fallback (won't create tags because it's escaped)
+    try {
+      codeEl.innerHTML = escaped;
+    } catch (err) {
+      console.warn('Failed to set escaped innerHTML fallback for code block', err);
+    }
+
+    // 2) Save the original raw text for copy operations
+    codeEl.setAttribute('data-raw', raw);
+
+    // 3) Build final highlighted DOM using text nodes and spans (this replaces the escaped fallback)
+    const frag = buildHighlightedDOM(raw);
+
+    // replace children with the highlighted fragment (keeps the pre/code structure)
+    while (codeEl.firstChild) codeEl.removeChild(codeEl.firstChild);
+    codeEl.appendChild(frag);
+  }
+
+  // run on all code blocks
+  document.querySelectorAll('code.language-swazilang').forEach(function(codeEl){
+    try {
+      processCodeBlock(codeEl);
+    } catch (err) {
+      // fallback: if highlight fails, leave the raw text alone (but escaped fallback exists in data-escaped)
+      console.error('SwaziLang highlighter failed for a block:', err);
+    }
+  });
+
+  // --- improved copy handler that uses stored raw code (unescaped) ---
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('button.copy-btn');
+    if(!btn) return;
+    const targetId = btn.getAttribute('data-target');
+    if(!targetId) return;
+    const pre = document.getElementById(targetId);
+    if(!pre) return;
+    // try to find the code element inside the pre
+    const codeEl = pre.querySelector('code.language-swazilang');
+    const textToCopy = (codeEl && codeEl.getAttribute('data-raw')) ? codeEl.getAttribute('data-raw') : pre.textContent;
+
+    if(!navigator.clipboard){
+      // graceful fallback
+      const ta = document.createElement('textarea');
+      ta.value = textToCopy;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(_) {}
+      ta.remove();
+      if(!btn.dataset.origText) btn.dataset.origText = btn.textContent || 'Copy';
+      btn.textContent = 'Copied ✓';
+      setTimeout(()=> btn.textContent = (btn.dataset.origText || 'Copy'), 1200);
+      return;
+    }
+
+    // store original text for restore
+    if(!btn.dataset.origText) btn.dataset.origText = btn.textContent || 'Copy';
+    navigator.clipboard.writeText(textToCopy).then(function(){
+      btn.textContent = 'Copied ✓';
+      btn.setAttribute('aria-pressed', 'true');
+      setTimeout(()=> {
+        btn.textContent = btn.dataset.origText;
+        btn.removeAttribute('aria-pressed');
+      }, 1200);
+    }).catch(function(err){
+      console.error('copy failed', err);
+      btn.textContent = 'Copy failed';
+      setTimeout(()=> btn.textContent = btn.dataset.origText || 'Copy', 1400);
+    });
+  });
+
+  // optional: keyboard shortcut (Ctrl/Cmd+Shift+C) to copy main sample
+  window.addEventListener('keydown', function(e){
+    const isMac = navigator.platform.toUpperCase().includes('MAC');
+    const mod = isMac ? e.metaKey : e.ctrlKey;
+    if(mod && e.shiftKey && e.code === 'KeyC'){
+      const btn = document.querySelector('button.copy-btn[data-target="full-sample"]');
+      if(btn) btn.click();
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>
