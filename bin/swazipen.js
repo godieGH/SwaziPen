@@ -134,3 +134,12 @@ program
   });
 
 program.parse(process.argv);
+
+
+/**
+ * This code was written by godieGH, this is the swazipen cli entry bin
+ * 
+ * @file
+ * @author godieGH
+ * @licence MIT
+ */
