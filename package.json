@@ -1,6 +1,6 @@
 {
   "name": "swazipen",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "type": "module",
   "description": "SwaziPen: Browser-based IDE for SwaziLang – edit, navigate, and run your SwaziLang projects in a project-scoped web editor powered by Node.js and Ace.",
   "bin": {
