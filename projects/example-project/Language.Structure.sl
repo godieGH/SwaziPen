@@ -256,4 +256,20 @@ jaribu {
 } kisha {
    // finally executed when the above is done
 }
-   
+
+
+
+//lambda functions
+
+data add = a => a * 3
+data add = a, b, c => {
+   rudisha a + b + c
+}
+call(a => {
+   chapisha a
+}, kweli)
+kazi call cb, t {
+   kama t {
+      cb(6, 9, 5)
+   }
+}
