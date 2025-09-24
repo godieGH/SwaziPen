@@ -127,6 +127,21 @@ pnpm install
 # Link the CLI tool globally
 pnpm link
 ```
+=> You will have to build the client too
+ ```bash
+ # Navigate to the client directory
+cd client
+
+# Install dependencies
+pnpm install
+
+# Build the client using Vite
+pnpm build
+
+# After building, a new 'public' folder is created in the server directory.
+# SwaziPen will serve the client from this 'public' folder.
+
+ ```
 
 > You can also use npm, yarn, or bun — but `pnpm` is recommended.
 

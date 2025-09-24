@@ -38,6 +38,8 @@ export default defineConfig({
                utils: ["clsx", "lodash.debounce", "prop-types", "zustand"]
             }
          }
-      }
+      },
+      outDir: "../server/public",
+      emptyOutDir: true,
    }
 });
