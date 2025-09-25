@@ -39,6 +39,8 @@ function TopNav() {
    return (
       <>
          {/* Pass the state and toggle function to the SideBar */}
+         
+         
          <SideBar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
 
          <div className="top-nav-bar">

@@ -124,6 +124,7 @@ function isActionableNode(node) {
    return node && (node.type === "file" || node.type === "folder");
 }
 
+
 /* FileTreeNode - presentational + interaction; relies on callbacks via parent FileTree */
 function FileTreeNode({
    node,
@@ -259,6 +260,30 @@ function FileTreeNode({
    const isSelected = selectedId === node.id;
    const isHighlighted = highlightedId === node.id;
 
+
+function getFileIcon(node) {
+  if(node.name.includes(".sl")) {
+    return <div>
+      <img src="icons/sl-file-2.png" style={{
+        width: "20px"
+      }} />
+    </div>
+  }
+  if(node.name.includes(".swz")) {
+    return <div>
+      <img src="icons/sl-file.png" style={{
+        width: "20px"
+      }} />
+    </div>
+  }
+  return (
+  <>
+    <FaFile color="#929292" />
+    </>
+  )
+}
+
+
    return (
       <div
          className={`file-node ${isRoot ? "root-node" : ""}`}
@@ -298,7 +323,7 @@ function FileTreeNode({
                   aria-label="skipped"
                />
             ) : (
-               <FaFile color="#929292" />
+               getFileIcon(node)
             )}
             <span style={{ padding: "0 5px" }}></span>
             {renameId === node.id ? (

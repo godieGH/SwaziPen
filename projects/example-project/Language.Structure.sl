@@ -63,7 +63,7 @@ fanya:
    // body
 wakati cond
 
-// not conditions can be wrapped in () or not except the kwa loop where () is must
+// note: conditions can be wrapped in () or not.  except with the kwa loop where () is must
 
 //ternary
 data f = cond ? conc : alt

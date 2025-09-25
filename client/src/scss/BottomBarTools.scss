@@ -3,7 +3,7 @@
 .bottom-bar-container {
   display: flex;
   align-items: center;
-  justify-content: space-evenly ;
+  justify-content: space-evenly;
   background-color: #1e1e1e;
   padding: 10px 0;
   border-radius: 8px;
@@ -14,6 +14,7 @@
   left: 0;
   z-index: 999;
 
+  /* Tool button base (keeps your original styles) */
   .tool-button {
     background-color: transparent;
     border: none;
@@ -25,11 +26,52 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-
+    transition: background-color 0.18s ease-in-out, color 0.18s ease-in-out,
+      transform 0.08s ease-in-out;
+    position: relative; /* allow badges/indicators */
 
     &:active {
       transform: scale(0.95);
+    }
+
+    &:focus {
+      outline: 2px solid rgba(99, 102, 241, 0.24);
+      outline-offset: 2px;
+    }
+
+    /* wrapper so icons and badges align nicely */
+    .icon-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      font-size: 18px;
+    }
+
+    /* small circular badge (M / C) used by move/copy actions */
+    .icon-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      line-height: 1;
+      border-radius: 999px;
+      background-color: #2b2b2b;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+      transform-origin: center;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+      pointer-events: none;
+      opacity: 0.98;
+      transform: translateX(-15px) translateY(10px);
     }
   }
 
@@ -38,5 +80,62 @@
     width: 1px;
     background-color: #606060;
     margin: 0 5px;
+  }
+
+  /* Tab button specific visuals */
+  .tab-button {
+    /* slightly larger tap target for long-press */
+    padding: 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* inline indicator text next to the tab button (NAV / MOV/C) */
+    .mode-indicator {
+      margin-left: 8px;
+      font-size: 12px;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      display: inline-block;
+      vertical-align: middle;
+      transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
+      pointer-events: none;
+    }
+
+    &.mode-active {
+      background-color: rgba(99, 102, 241, 0.08);
+      color: #6366f1;
+
+      .mode-indicator {
+        background: rgba(99, 102, 241, 0.12);
+        color: #6366f1;
+      }
+    }
+  }
+
+  /* Visual differences for move/copy badges to be clearer: */
+  .tool-button[data-type="move"] .icon-badge {
+    background-color: #0f766e; /* teal-ish */
+    color: #e6fffa;
+  }
+  .tool-button[data-type="copy"] .icon-badge {
+    background-color: #b45309; /* amber-ish */
+    color: #fff7ed;
+  }
+
+  /* Slightly larger targets on small screens */
+  @media (max-width: 480px) {
+    .tool-button {
+      padding: 12px;
+      font-size: 22px;
+    }
+
+    .tab-button .mode-indicator {
+      display: none; /* save horizontal space on small screens */
+    }
   }
 }

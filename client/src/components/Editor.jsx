@@ -91,14 +91,14 @@ function Editor() {
    const handleAction = data => {
       const ed = editorRef.current;
       if (!ed) return;
-      if (data.title === "Tab / Shift+Tab") ed.insert("\t");
-      if (data.title === "Navigate Up") ed.navigateUp(1);
-      if (data.title === "Navigate Down") ed.navigateDown(1);
-      if (data.title === "Navigate Left") ed.navigateLeft(1);
-      if (data.title === "Navigate Right") ed.navigateRight(1);
-      if (data.title === "Undo") ed.undo();
-      if (data.title === "Redo") ed.redo();
-      if (data.title === "Save File") {
+      if (data.key === "tab") ed.insert("\t");
+      if (data.key === "nav-up") ed.navigateUp(1);
+      if (data.key === "nav-down") ed.navigateDown(1);
+      if (data.key === "nav-left") ed.navigateLeft(1);
+      if (data.key === "nav-right") ed.navigateRight(1);
+      if (data.key === "undo") ed.undo();
+      if (data.key === "redo") ed.redo();
+      if (data.key === "save") {
          if (!treeFileData) return;
          if(!useLoadedFileStore.getState().notsaved) return
          mutateFileContent.mutate({
@@ -107,6 +107,10 @@ function Editor() {
             content: sourceContent
          });
       }
+      if(data.key === "move-up") ed.moveLinesUp();
+      if(data.key === "move-down") ed.moveLinesDown();
+      if(data.key === "copy-up") ed.copyLinesUp();
+      if(data.key === "copy-down") ed.copyLinesDown();
    };
 
    useEffect(() => {
@@ -148,7 +152,8 @@ function Editor() {
             theme={theme}
             width="100%"
             height="86dvh"
-            fontSize={14}
+            fontSize={12}
+            lineHeight={24}
             onLoad={handleLoad}
             value={sourceContent}
             onChange={handleChange}
@@ -157,8 +162,8 @@ function Editor() {
                //enableLiveAutocompletion: true,
                //enableSnippets: true,
                showLineNumbers: true,
-               tabSize: 3,
-               wrap: true,
+               tabSize: 4,
+               //wrap: true,
                wrapMethod: "auto",
                displayIndentGuides: true
             }}
