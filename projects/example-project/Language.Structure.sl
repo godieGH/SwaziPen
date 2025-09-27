@@ -165,10 +165,10 @@ muundo ClassName rithi ClassName {
       // static method
    }
    // a method can be static and private 
-   tabia &@fff {} // the order of & and @ doesn't matter
+   &@tabia fff {} // the order of & and @ doesn't matter
    
-   // the thabiti keyword on method can be used to ensure that tabia is a getter can't be used to mdify something
-   tabia thabiti fff arg1, arg2, {
+   // the thabiti keyword on method can be used to ensure that tabia is a getter can't be used to mdify something, no args
+   tabia thabiti fff {
       $.a = arg2 // this would raise an error
       rudisha $.a // valid
       rudisha  $ // the $ is like this or self to return the object created for method chaining
