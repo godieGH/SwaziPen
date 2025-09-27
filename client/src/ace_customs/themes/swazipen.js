@@ -103,8 +103,8 @@ ace.define(
 
     /* Keywords (general) */
     .ace-swazipen .ace_keyword {
-      color: #569cd6;
-      font-weight: bold;
+      color: #57AFFF;
+      font-weight: 100;
     }
     
     .ace-swazipen .ace_keyword.operator {

@@ -152,17 +152,18 @@ function Editor() {
             theme={theme}
             width="100%"
             height="86dvh"
-            fontSize={12}
-            lineHeight={24}
+            fontSize={14}
+            lineHeight={22}
             onLoad={handleLoad}
             value={sourceContent}
             onChange={handleChange}
             setOptions={{
+                fontFamily: "Noto Mono, Menlo, Monaco, Consolas, 'Courier New', monospace",
                //enableBasicAutocompletion: true,
                //enableLiveAutocompletion: true,
                //enableSnippets: true,
                showLineNumbers: true,
-               tabSize: 4,
+               tabSize: 2,
                //wrap: true,
                wrapMethod: "auto",
                displayIndentGuides: true

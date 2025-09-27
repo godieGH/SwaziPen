@@ -22,14 +22,14 @@ ace.define(
     var SwaziLangHighlightRules = function () {
       // Language keywords
       var languageKeywords =
-        "data|kazi|tabia|kama|vinginevyo|kwa|wakati|fanya|muundo|rithi|kutoka|jaribu|kamata|kisha";
+        "data|kazi|tabia|kama|vinginevyo|kwa|wakati|fanya|muundo|rithi|kutoka|jaribu|makosa|kisha|chagua";
       var specialKeywords =
-        "AINAYA|NINAMBARI|NINENO|NIBOOLEAN|NIKAZI|NILISTI";
+        "ainaya|NINAMBA|NINENO|NIBOOL|NIKAZI|NIORODHA";
       var specialModifiers =
-        "unda|thabiti|rudisha|rithi|futa|subiri|tumia|ruhusu|onesha";
+        "unda|thabiti|rudisha|rithi|futa|subiri|tumia|ruhusu|onesha|kila|katika|ni|ikiwa|simama|endelea|kaida";
       var operationalKeywords = "sawa|sisawa|na|au|si";
       var builtinClasses =
-        "Seti|Ramani|Kamusi|Listi|Boolean|Nambari|Neno|Ahadi|Makosa|MakosaYaAina|MakosaYaMrejeo|MakosaYaMpangilio";
+        "Seti|Ramani|Kamusi|Orodha|Bool|Namba|Neno|Ahadi|Makosa|MakosaYaAina|MakosaYaMrejeo|MakosaYaMpangilio";
       var builtinConstants = "kweli|sikweli";
       var builtinFunctions = "chapisha|andika";
 
@@ -219,7 +219,7 @@ ace.define(
     (function () {
       // Folding: C-style curly, Python-style indent, multi-line comments
       this.foldingStartMarker =
-        /(\{|\[|\/\*)|(^\s*(kazi|tabia|kama|vinginevyo|kwa|wakati|fanya)\b[^\{\:]*(\:|$))/;
+        /(\{|\[|\/\*)|(^\s*(kazi|tabia|kama|vinginevyo|kwa|wakati|fanya|chagua|jaribu|makosa|kisha|muundo|ikiwa|kaida)\b[^\{\:]*(\:|$))/;
       // Ensure stop marker matches closing tokens correctly (*/ for comments)
       this.foldingStopMarker =
         /(\}|\]|^\s*[\:\}]|^\s*\/\/|^\s*#|^\s*\*\/)/;
@@ -256,7 +256,8 @@ ace.define(
     "ace/lib/oop",
     "ace/mode/text",
     "ace/mode/swazilang_highlight_rules",
-    "ace/mode/folding/swazilang"
+    "ace/mode/folding/swazilang",
+    "ace/range"
   ],
   function (require, exports) {
     "use strict";
@@ -265,6 +266,7 @@ ace.define(
     var SwaziLangHighlightRules =
       require("ace/mode/swazilang_highlight_rules").SwaziLangHighlightRules;
     var FoldMode = require("ace/mode/folding/swazilang").FoldMode;
+    var Range = require("ace/range").Range;
 
     var Mode = function () {
       this.HighlightRules = SwaziLangHighlightRules;
@@ -272,12 +274,91 @@ ace.define(
       this.$behaviour = this.$defaultBehaviour;
       this.lineCommentStart = ["//", "#"];
       this.blockComment = { start: "/*", end: "*/" };
+
+      // Characters that can trigger electric behaviour - helpful for auto outdent or reindent on enter
+      this.electricCharacters = ":";
     };
     oop.inherits(Mode, TextMode);
 
     (function () {
       this.$id = "ace/mode/swazilang";
       this.snippetFileId = "ace/snippets/swazilang";
+
+      // Called by Ace when the user presses Enter to compute the indent of the new line.
+      // We'll increase indent when the previous line ends with a colon ":" (common "block start" indicator).
+      this.getNextLineIndent = function (state, line, tab) {
+        var indent = this.$getIndent(line);
+        var trimmed = line.trim();
+
+        // If the line ends with a colon (possibly followed by comments/whitespace), increase indent.
+        // Example: "kama x: " or "tabia y : // comment"
+        if (/:$/.test(trimmed) || /:\s*(\/\/|#|\/\*).*?$/.test(trimmed)) {
+          return indent + tab;
+        }
+
+        return indent;
+      };
+
+      // Check if we should outdent automatically when the user types a closing keyword like "end"
+      // This is invoked before inserting the newline. We'll signal true if the line being typed starts with "end".
+      this.checkOutdent = function (state, line, input) {
+        // We only care about Enter/newline input here.
+        if (input !== "\n" && input !== "\r\n") return false;
+
+        // If the line being typed on is just whitespace and the next (typed) line begins with an outdenting keyword,
+        // Ace will call autoOutdent afterwards. We'll return true to indicate the editor should consider outdenting.
+        // (Another way is to always return false and let autoOutdent handle adjustments; this is conservative.)
+        if (/^\s*$/.test(line)) return true;
+
+        return false;
+      };
+
+      // When a new line with a dedent keyword like "end" is created, reduce its indent to match the block start.
+      // This implementation finds the first non-empty previous line and uses its indent.
+      this.autoOutdent = function (state, session, row) {
+        var line = session.getLine(row);
+        var match = line.match(/^(\s*)(end\b)/);
+        if (!match) return;
+
+        // Find the indent to match: look for the previous non-empty line which started the block.
+        var startRow = row - 1;
+        while (startRow >= 0) {
+          var prevLine = session.getLine(startRow);
+          if (prevLine.trim() !== "") break;
+          startRow--;
+        }
+
+        // Determine indent of block-starting line (if any). If none, no change.
+        var desiredIndent = "";
+        if (startRow >= 0) {
+          // If the previous non-empty line ended with a colon, use its indent (no extra tab),
+          // otherwise keep current indent.
+          var prevLineText = session.getLine(startRow);
+          var prevIndent = this.$getIndent(prevLineText);
+          if (/:$/.test(prevLineText.trim())) {
+            desiredIndent = prevIndent;
+          } else {
+            // fallback: reduce by one tabstop relative to current line indent
+            var currentIndent = match[1];
+            if (currentIndent.length > 0) {
+              // try to reduce by one tab's worth; keep it simple and remove one tab string if present
+              var tab = session.getTabString();
+              if (currentIndent.indexOf(tab) === 0) {
+                desiredIndent = currentIndent.slice(tab.length);
+              } else {
+                // remove single space if no tab matched
+                desiredIndent = currentIndent.slice(1);
+              }
+            }
+          }
+        }
+
+        // Replace current leading whitespace with desiredIndent
+        if (desiredIndent != null) {
+          var range = new Range(row, 0, row, match[1].length);
+          session.replace(range, desiredIndent);
+        }
+      };
     }).call(Mode.prototype);
 
     exports.Mode = Mode;
