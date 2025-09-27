@@ -51,6 +51,9 @@ kwa(a=0;a<num;a++) {} // c-style for loop
 kwa(a=0;a<num;a++):
    // body
 
+kwa kila x katika Iterable :
+    chapisha x
+
 wakati cond {} // c-style while loop
 wakati cond :
    // pythonic style
@@ -62,6 +65,11 @@ fanya {
 fanya:
    // body
 wakati cond
+
+//the fanya keyword can also be used without wakati
+fanya {
+  // this code will run only once
+}
 
 // note: conditions can be wrapped in () or not.  except with the kwa loop where () is must
 
@@ -106,12 +114,16 @@ data b = ob.ggg
 b()
 ob.fff(a, b, c)
 
+ob.k++ // valid
+ob.k += 4 // valid
 
 // arrays, creates array
 data arr = [a, b, c, d];
 //accessing with arr[0], arr[1]
 arr[0] = "A"
 arr[0] = kweli
+arr[1]++
+arr[6] -= 5
 
 // other things that will be supported later
 data ob = Kamusi({
@@ -188,18 +200,18 @@ futa obj // to destroy an instance manually, it will return the destructor retur
 
 
 //unary keywords
-data type = AINAYA sikweli // returns boolean
-data type = AINAYA 30 // returns nambari
-data type = AINAYA "hello world" // returns neno
-data type = AINAYA fff // returns kazi
-data type = AINAYA arr // returns listi
-data type = AINAYA ob // returns object
-data type = AINAYA ClassName // returns muundo
-data b = 60 NINAMBARI // returns kweli
+data type = ainaya sikweli // returns bool
+data type = ainaya 30 // returns namba
+data type = ainaya "hello world" // returns neno
+data type = ainaya fff // returns kazi
+data type = ainaya arr // returns orodha
+data type = ainaya ob // returns object
+data type = ainaya ClassName // returns muundo
+data b = 60 NINAMBA // returns kweli
 data c = "hello world" NINENO// returns true 
-data d = kweli NIBOOLEAN // returns kweli
+data d = kweli NIBOOL // returns kweli
 data f = fff NIKAZI
-data g = arr NILISTI
+data g = arr NIORODHA
 
 
 
@@ -245,13 +257,13 @@ rudisha {a, ...others}
 //error handling
 jaribu {
    // you can  that throws exceptions
-   onesha unda Makosa("...") // create an object to throw
+   onesha Makosa("...") // create an object to throw
    data err = unda MakosaYaAina("...") // create an object to throw
    data err = unda MakosaYaMrejeo("...") // create an object to throw
    data err = unda MakosaYaMpangilio("...") // create an object to throw
    onesha err
    //onesha is the keyword used to throw errors/exceptions
-} kamata(err) {
+} makosa err {
    // catch exceptions
 } kisha {
    // finally executed when the above is done
@@ -264,12 +276,70 @@ jaribu {
 data add = a => a * 3
 data add = a, b, c => {
    rudisha a + b + c
-}
+} // can have no () on args when just declared
 call(a => {
    chapisha a
-}, kweli)
+}, kweli) // if passed as arg can have no () if one arg
 kazi call cb, t {
    kama t {
       cb(6, 9, 5)
    }
 }
+
+// passing lambda as callback
+call((a, b, c) => a) // just like js arrow fn, if more args in callback use () 
+
+
+// the word ni a syntax sugar 
+//eg. that will evaluate cond and assign it to x so  the kama takes x as its condition
+kama x ni cond :
+  // code 
+  // x is available in this scope as kweli
+vinginevyo:
+  // x is available in this scope as sikweli
+
+//can also be used anywhere else eg.
+x ni 5
+// makes 5 a truthy value and assign the kweli /sikweli to x this makes x available to the scope that statement was made
+// x ni null is like saying data x = Booleanize(null) and make x available to the scope it is initially stated
+// used in loops while
+fanya :
+  // x is available in here as true
+  // can change x up here to stop the loop conditionally
+  kama cond :
+    x = sikweli // that stops the loop
+wakati x ni 5 == 5 
+
+
+//std input just like pythonic
+//eg.
+data x = ?("Andika jina lako: ") // this will stop execution and wait for user to input the data
+// all inputs are strings data type even if user inputs numbers they will be string devs. have to do data type conversion manually in there code
+
+
+// switch conditions, support both {} and : blocks
+chagua cond:
+  ikiwa val1:
+    fanya {
+      
+    } // remember i told you fanya is a loop that execute just once here is how you can utilize it
+    simama; // breaks the witch 
+  ikiwa val2:
+    chapisha 555
+    chapisha 555 // you can also not use fanya it just a syntax sugar for understanding semantics
+    simama;
+  ikiwa val3 {
+    // eg. with c-style blocks, still valid
+  }
+  ikiwa val4 {
+    simama;
+  }
+  kaida:
+    // this is default case
+    simama;// might not be used if it is at the end but best practice to breake a case
+  
+  
+  
+  
+  
+  
