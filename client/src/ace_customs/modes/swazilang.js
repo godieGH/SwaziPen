@@ -219,7 +219,7 @@ ace.define(
     (function () {
       // Folding: C-style curly, Python-style indent, multi-line comments
       this.foldingStartMarker =
-        /(\{|\[|\/\*)|(^\s*(kazi|tabia|kama|vinginevyo|kwa|wakati|fanya|chagua|jaribu|makosa|kisha|muundo|ikiwa|kaida)\b[^\{\:]*(\:|$))/;
+        /(\{|\[|\/\*)|(^\s*(kazi|tabia|@tabia|&tabia|@&tabia|&@tabia|kama|vinginevyo|kwa|wakati|fanya|chagua|jaribu|makosa|kisha|muundo|ikiwa|kaida)\b[^\{\:]*(\:|$))/;
       // Ensure stop marker matches closing tokens correctly (*/ for comments)
       this.foldingStopMarker =
         /(\}|\]|^\s*[\:\}]|^\s*\/\/|^\s*#|^\s*\*\/)/;
