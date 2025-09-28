@@ -29,7 +29,7 @@ ace.define(
         "unda|thabiti|rudisha|rithi|futa|subiri|tumia|ruhusu|onesha|kila|katika|ni|ikiwa|simama|endelea|kaida";
       var operationalKeywords = "sawa|sisawa|na|au|si";
       var builtinClasses =
-        "Seti|Ramani|Kamusi|Orodha|Bool|Namba|Neno|Ahadi|Makosa|MakosaYaAina|MakosaYaMrejeo|MakosaYaMpangilio";
+        "Seti|Ramani|Object|Orodha|Bool|Namba|Neno|Ahadi|Makosa|MakosaYaAina|MakosaYaMrejeo|MakosaYaMpangilio";
       var builtinConstants = "kweli|sikweli";
       var builtinFunctions = "chapisha|andika";
 
