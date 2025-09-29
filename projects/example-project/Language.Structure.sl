@@ -299,7 +299,7 @@ vinginevyo:
   // x is available in this scope as sikweli
 
 //can also be used anywhere else eg.
-x ni 5
+// x ni 5 not supported can only be used in kama, wakati, fanya wakati
 // makes 5 a truthy value and assign the kweli /sikweli to x this makes x available to the scope that statement was made
 // x ni null is like saying data x = Booleanize(null) and make x available to the scope it is initially stated
 // used in loops while
@@ -313,7 +313,7 @@ wakati x ni 5 == 5
 
 //std input just like pythonic
 //eg.
-data x = ?("Andika jina lako: ") // this will stop execution and wait for user to input the data
+data x = soma("Andika jina lako: ") // this will stop execution and wait for user to input the data
 // all inputs are strings data type even if user inputs numbers they will be string devs. have to do data type conversion manually in there code
 
 

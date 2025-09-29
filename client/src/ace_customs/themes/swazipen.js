@@ -1,12 +1,12 @@
 import ace from "ace-builds/src-noconflict/ace";
 
 ace.define(
-   "ace/theme/swazipen",
-   ["require", "exports", "module", "ace/lib/dom"],
-   function (require, exports, module) {
-      exports.isDark = true;
-      exports.cssClass = "ace-swazipen";
-      exports.cssText = `
+    "ace/theme/swazipen",
+    ["require", "exports", "module", "ace/lib/dom"],
+    function (require, exports, module) {
+        exports.isDark = true;
+        exports.cssClass = "ace-swazipen";
+        exports.cssText = `
     /* VSCode-like base */
     .ace-swazipen {
       background-color: #1e1e1e;
@@ -135,6 +135,11 @@ ace.define(
       color: #c779e8;
       font-style: italic;
     }
+    
+    .ace-swazipen .ace_constant.ace_language.ace_null {
+       color: grey;
+       font-style: italic;
+    }
 
     /* Built-in functions */
     .ace-swazipen .ace_support.ace_function {
@@ -231,7 +236,7 @@ ace.define(
     }
   `;
 
-      var dom = require("ace/lib/dom");
-      dom.importCssString(exports.cssText, exports.cssClass);
-   }
+        var dom = require("ace/lib/dom");
+        dom.importCssString(exports.cssText, exports.cssClass);
+    }
 );

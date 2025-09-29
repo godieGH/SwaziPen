@@ -22,6 +22,7 @@ program
   .action(async (source, options) => {
     try {
       process.stdout.write('\x1Bc');
+      console.log(`\u276F Swazipen v${pkg.version}`)
       let projectPath;
       if (!source) {
         const ans = await inquirer.prompt([
