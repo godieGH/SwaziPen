@@ -2,7 +2,7 @@
 
 # single-line comment
 data x = 5;
-data thabiti a = 100;
+data thabiti a = 100; // a is constant  now
 data b = "hello world";
 data c = kweli;
 data d = sikweli;
@@ -11,8 +11,8 @@ data d = sikweli;
 kazi ddd arg1, arg2, arg3 {
    // sungle-line comment too
    // sungle-line comment too
-   // return statement
-   rudisha val
+   
+   rudisha val // return statement
 }
 
 // python like functions
@@ -89,20 +89,21 @@ chapisha("hello world", "hello world")
 andika 5 // other print fanctionality but with no new line in mind
 andika(4, "text")
 
-// note tabia hazina pythonic indendentantion they are c-style only not like kazi
-// object data types like js objects or pythonic dics
+// object data types
 data ob = {
-   "name": "John Doe",
-   "age": 30,
+    @name: "John Doe", // @ private field
+    age: 30,
    "isMarried": kweli,
    tabia ggg arg1, arg2 {
       // body
    }
-   tabia thabiti fff arg1 {
+   &tabia thabiti fff arg1 {
       $.name = arg1 // the interpreter will raise an error for this method can't change nothing
       // body, can't change no member propertis it is a getter
       rudisha $ // means self or this object for method chaining
-   }
+   } 
+   tabia ppp : 
+     rudisha $
 }
 
 ob.name = "Jane Doe"
@@ -117,6 +118,26 @@ ob.fff(a, b, c)
 ob.k++ // valid
 ob.k += 4 // valid
 
+
+data kaowa = sikweli
+data ccc = {
+   @jina: "John Doe",
+   &umri: 39,
+   @kaowa,
+   @marks: [30, 50, 70, 89],
+   @tabia wastani:
+     data jumla = $.marks.punguza($.ppp, 0)
+     rudisha jumla / $.marks.idadi
+   @tabia ppp a, b :
+     rudisha a + b;
+   tabia thabiti ttt {
+     rudisha `Mimi ni ${$["jina"]} mwenye umri wa miaka ${$.umri} wastani wa marks zangu ni ${$.wastani()}, ${$.kaowa}`          
+   }
+}
+chapisha ccc.ttt // returns Mimi ni John Doe mwenye umri wa miaka 39 wastani wa marks zangu ni 59.75, sikweli
+// & is locked field that means can nkt be reconstructed outside provide a layer of security from overwriting built-ins props and methods 
+
+
 // arrays, creates array
 data arr = [a, b, c, d];
 //accessing with arr[0], arr[1]
@@ -124,14 +145,6 @@ arr[0] = "A"
 arr[0] = kweli
 arr[1]++
 arr[6] -= 5
-
-// other things that will be supported later
-data ob = Kamusi({
-   "name": "John Doe", // just like normal objects
-}) // create objects / dics
-// built in classes
-data set = unda Seti({a, b, c}) // a set of unique element
-data map = unda Ramani(); // just like Map() in js
 
 
 # not we don't use indendentantion on classes dfn, only use indendentantion in the above codes,
@@ -141,27 +154,27 @@ muundo ClassName rithi ClassName {
    a = 6; // predefined members
    b; // predefined member but not necessary the constructor can build them
    @f; // private member
-   &k = 5; // static member belong to a class
+   *k = 5; // static member belong to a class
    
    //tabia
    ClassName arg, arg { // it is a constructor to build the object
       // constructor called when a class is made
       $.a = arg;
       $.b = arg;
-      $.@k = arg; // private member
+      $.k = arg; // private member
    }
-   ~ClassName arg, arg {
-      // destructor , called when an object is destroyed, normally when it is out of scope or program ended or even manually(thats why it takes args for manual termination)
+   ~ClassName  {
+      // destructor 
    }
    
    //define methods with tabia keyword
    tabia fff arg, arg2 {
       // body
    }
-   tabia @fff {
+   @tabia fff {
       // private method
    }
-   tabia &fff {
+   &tabia fff {
       // static method
    }
    // a method can be static and private 
@@ -179,14 +192,10 @@ muundo ClassName rithi ClassName {
 data obj = unda ClassName(); // calling the constructor with no args, unda is keyword for creating new objects, it is like new in js
 obj.a = 5 // reasign unprotected members
 obj.ccc(arg) // calling tabia ccc
-data k = ClassName::k // accessing static members
 data p = ClassName.k // also valid
-data fn = ClassName::fff // accessing and assigning static method
-data p = ClassName.fff // also valid
 fn(arg) // calling it
 // or
 ClassName.fff() // this is also valid, just get and call
-ClassName::fff(arg) // this is valid
 
 
 /*
@@ -200,18 +209,18 @@ futa obj // to destroy an instance manually, it will return the destructor retur
 
 
 //unary keywords
-data type = ainaya sikweli // returns bool
-data type = ainaya 30 // returns namba
-data type = ainaya "hello world" // returns neno
-data type = ainaya fff // returns kazi
-data type = ainaya arr // returns orodha
-data type = ainaya ob // returns object
-data type = ainaya ClassName // returns muundo
-data b = 60 NINAMBA // returns kweli
-data c = "hello world" NINENO// returns true 
-data d = kweli NIBOOL // returns kweli
-data f = fff NIKAZI
-data g = arr NIORODHA
+data type = ainaya(sikweli) // returns bool
+data type = ainaya(30) // returns namba
+data type = ainaya("hello world") // returns neno
+data type = ainaya(fff) // returns kazi
+data type = ainaya(arr) // returns orodha
+data type = ainaya(ob) // returns object
+data type = ainaya(ClassName) // returns muundo
+data b = 60.ninamba // returns kweli
+data c = "hello world".nineno// returns true 
+data d = kweli.nibool // returns kweli
+data f = fff.nikazi
+data g = arr.niorodha
 
 
 
