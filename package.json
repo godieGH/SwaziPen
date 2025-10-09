@@ -8,7 +8,11 @@
   },
   "scripts": {
     "server": "nodemon server/index.js",
-    "client": "cd ./client && pnpm dev"
+    "client": "cd ./client && pnpm dev",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs",
+    "docs:preview": "vitepress preview docs"
   },
   "repository": {
     "type": "git",
@@ -35,6 +39,10 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "dotenv": "^17.2.2"
+    "@iconify-json/mdi": "^1.2.3",
+    "@iconify-json/simple-icons": "^1.2.54",
+    "dotenv": "^17.2.2",
+    "prismjs": "^1.30.0",
+    "vitepress": "1.6.4"
   }
 }
