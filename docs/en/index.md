@@ -11,7 +11,7 @@ hero:
       link: /en/getting-started
     - theme: alt
       text: Reference & Keywords
-      link: /reference
+      link: /
 
 features:
   - title: Friendly by design
@@ -28,8 +28,8 @@ footer: "Learn, build, and share — welcome to SwaziLang!"
 
 > Quick path
 > - New here? Start with Get Started → [Here](/en/getting-started)  
-> - Need a quick reference? See Reference & Keywords → [reference](/en/reference)  
-> - Want examples? Check Recipes & Examples → [examples](/en/examples)
+> - Need a quick reference? See Reference & Keywords → [reference](/en/references/reference)  
+> - Want examples? Check Recipes & Examples → [examples](/en/references/examples)
 
 Why SwaziLang?
 - Designed for readability: natural keywords and clear structure make programs easy to follow.
