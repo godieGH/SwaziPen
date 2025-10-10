@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import enSideBar from "./enSidBar.js"
+import enSideBar from "./enSidBar.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -22,11 +22,14 @@ export default defineConfig({
                     { text: "Home", link: "/en/" },
                     { text: "Get Started", link: "/en/getting-started" },
                     { text: "Swazi Advanced", link: "/en/swazi/advanced" },
-                    { text: "Guide & Resources", items: [
-                      {text: "Keywords", link: ""},
-                      {text: "Reference", link: ""},
-                      {text: "Examples & Recipes", link: ""},
-                      ]},
+                    {
+                        text: "Guide & Resources",
+                        items: [
+                            { text: "Keywords", link: "" },
+                            { text: "Reference", link: "" },
+                            { text: "Examples & Recipes", link: "" }
+                        ]
+                    }
                 ],
                 sidebar: enSideBar
             }

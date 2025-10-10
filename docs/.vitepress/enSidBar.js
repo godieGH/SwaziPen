@@ -57,11 +57,11 @@ export default {
         {
             text: "Operations",
             items: [
-                { text: "Arthmetic", link: "" },
-                { text: "Assignment", link: "" },
-                { text: "Comparisons", link: "" },
-                { text: "Logical Operators", link: "" },
-                { text: "Identity Operators", link: "" }
+                { text: "Arthmetic", link: "/en/op/arthmetic" },
+                { text: "Assignment", link: "/en/op/assignment" },
+                { text: "Comparisons", link: "/en/op/comparisons" },
+                { text: "Logical Operators", link: "/en/op/logic-ops" },
+                { text: "Identity Operators", link: "/en/op/identity-ops" }
             ]
         },
         {
