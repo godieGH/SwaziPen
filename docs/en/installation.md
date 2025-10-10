@@ -7,7 +7,7 @@ This page helps you install SwaziLang (compiler) and SwaziPen (browser IDE) so y
 ## 1. Prerequisites
 
 ### SwaziLang Compiler
-Right now SwaziLang do not have an official pre-built Compilers for cross-platform to just download and install, You will need to build it from source to get started. 
+Right now SwaziLang do not have an official pre-built cross-platform binaries to just download and install, You will need to build the interpreter from the source to get started. 
 To build from source you need:-
 - Any **C++ Compiler**: `GCC`, `Clang`, or `MSVC` (install from their official website — but if you have any don't worry)
 - **CMake**: For building the project (install from their official website)
