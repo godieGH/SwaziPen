@@ -66,13 +66,13 @@ export default {
         },
         {
             text: "functions",
-            items: [{ text: "Introduction to functions", link: "" }]
+            items: [{ text: "Introduction to functions", link: "/en/functions/functions.md" }]
         },
         {
             text: "Arrays & Objects",
             items: [
-                { text: "Arrays", link: "" },
-                { text: "Array Methods", link: "" },
+                { text: "Arrays", link: "/en/collections/arrays.md" },
+                { text: "Array Methods", link: "/en/collections/array-methods.md" },
                 { text: "objects", link: "" },
                 { text: "Object Privacy", link: "" },
                 { text: "Object functions", link: "" }
