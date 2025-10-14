@@ -73,8 +73,8 @@ export default {
             items: [
                 { text: "Arrays", link: "/en/collections/arrays.md" },
                 { text: "Array Methods", link: "/en/collections/array-methods.md" },
-                { text: "objects", link: "" },
-                { text: "Object Privacy", link: "" },
+                { text: "objects", link: "/en/collections/objects.md" },
+                { text: "Object Privacy", link: "/en/collections/object-privacy.md" },
                 { text: "Object functions", link: "" }
             ]
         },
