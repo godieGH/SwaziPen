@@ -75,43 +75,43 @@ export default {
                 { text: "Array Methods", link: "/en/collections/array-methods.md" },
                 { text: "objects", link: "/en/collections/objects.md" },
                 { text: "Object Privacy", link: "/en/collections/object-privacy.md" },
-                { text: "Object functions", link: "" }
+                { text: "Object functions", link: "/en/collections/object-functions" }
             ]
         },
         {
             text: "Control flow & functions",
             items: [
-                { text: "Swazi functions", link: "" },
-                { text: "Swazi lambda functions", link: "" },
+                { text: "Swazi functions", link: "/en/cf/functions" },
+                { text: "Swazi lambda functions", link: "/en/cf/lambdas" },
                 {
                     text: "Swazi If...else Statements",
-                    link: ""
+                    link: "/en/cf/ifelse"
                 },
-                { text: "Swazi For(kwa) Loops", link: "" },
-                { text: "Swazi while(wakati) Loop", link: "" },
+                { text: "Swazi For(kwa) Loops", link: "/en/cf/forLoops" },
+                { text: "Swazi while(wakati) Loop", link: "/en/cf/wakatiLoop" },
                 {
                     text: "Swazi do-while(fanya-wakati) Loop",
-                    link: ""
+                    link: "/en/cf/dowhile"
                 },
                 {
                     text: "Swazi 'simama' & 'endelea' Loop controls",
-                    link: ""
+                    link: "/en/cf/simama-endelea"
                 },
-                { text: "Swazi Switch Statement", link: "" }
+                { text: "Swazi Switch Statement", link: "/en/cf/switch" }
             ]
         },
         {
             text: "Ternary & Literals",
             items: [
-                { text: "Swazi Ternary Expressions", link: "" },
-                { text: "Swazi Template literals", link: "" }
+                { text: "Swazi Ternary Expressions", link: "/en/literals/ternary" },
+                { text: "Swazi Template literals", link: "/en/literals/template-literals" }
             ]
         },
         {
             text: "OOP",
             items: [
-                { text: "Classes(muundo)", link: "" },
-                { text: "Inheritence(rithi)", link: "" }
+                { text: "Classes(muundo)", link: "/en/oop/muundo" },
+                { text: "Inheritence(rithi)", link: "/en/oop/Inheritence" }
             ]
         }
     ],
