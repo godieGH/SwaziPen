@@ -1,1 +1,0 @@
-# Swazi Advanced

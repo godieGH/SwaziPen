@@ -115,19 +115,19 @@ export default {
             ]
         }
     ],
-    "/en/swazi/advanced": [
+    "/en/swazi/": [
         {
             text: "Swazi Modules",
             items: [
-                { text: "Introduction", link: "" },
-                { text: "Built in modules", link: "" }
+                { text: "Introduction", link: "/en/swazi/introduction-to-swazi-modules" },
+                { text: "Built in modules", link: "/en/swazi/built-modules" }
             ]
         },
         {
             text: "Swazi Built-ins & global objects",
             items: [
-                { text: "Built in Functions", link: "" },
-                { text: "Built-in Objects", link: "" }
+                { text: "Built in Functions", link: "/en/swazi/built-in-functions" },
+                { text: "Built-in Objects", link: "/en/swazi/built-in-objects" }
             ]
         }
     ]

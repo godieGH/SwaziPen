@@ -11,7 +11,7 @@ hero:
       link: /en/getting-started
     - theme: alt
       text: Reference & Keywords
-      link: /
+      link: /en/references/reference
 
 features:
   - title: Friendly by design

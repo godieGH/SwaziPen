@@ -21,13 +21,13 @@ export default defineConfig({
                 nav: [
                     { text: "Home", link: "/en/" },
                     { text: "Get Started", link: "/en/getting-started" },
-                    { text: "Swazi Advanced", link: "/en/swazi/advanced" },
+                    { text: "Swazi Advanced", link: "/en/swazi/" },
                     {
                         text: "Guide & Resources",
                         items: [
-                            { text: "Keywords", link: "" },
-                            { text: "Reference", link: "" },
-                            { text: "Examples & Recipes", link: "" }
+                            { text: "Keywords", link: "/en/references/keywords" },
+                            { text: "Reference", link: "/en/references/reference" },
+                            { text: "Examples & Recipes", link: "/en/references/examples" }
                         ]
                     }
                 ],
