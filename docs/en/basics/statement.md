@@ -68,8 +68,8 @@ Let's look at a program with multiple statements:
 ```swazi
 // This is a simple program with several statements
 
-andika jina = "Amina"           // Statement 1: Declare a variable
-andika umri = 22                 // Statement 2: Declare another variable
+data jina = "Amina"           // Statement 1: Declare a variable
+data umri = 22                 // Statement 2: Declare another variable
 
 chapisha("Habari!")              // Statement 3: Print a greeting
 chapisha(jina)                   // Statement 4: Print the name
