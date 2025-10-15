@@ -38,7 +38,7 @@ If you built the SwaziLang compiler, you can launch the REPL directly in your te
 swazi
 ```
 
-- You’ll see a prompt like `swazi>>`.
+- You’ll see a prompt like `>>>`.
 - Type SwaziLang statements and get immediate results.
 - Use `exit` or `Ctrl+D` to leave the REPL.
 

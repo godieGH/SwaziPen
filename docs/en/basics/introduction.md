@@ -18,7 +18,8 @@ SwaziLang was first created by a bunch of losers, who thought they could make a 
 7) And many more as it grows.
 
 # What is the latest Version of SwaziLang?
-The latest stable Version of SwaziLang is Version 1.11.0
+The latest stable Version of SwaziLang is Version [![Release](https://img.shields.io/github/v/release/godieGH/SwaziLang?style=flat-square)](https://github.com/godieGH/SwaziLang/releases)
+
 
 # Where can you code SwaziLang?
 You can write and code SwaziLang through the SwaziPen browser-based IDE that is best suited for learning.
