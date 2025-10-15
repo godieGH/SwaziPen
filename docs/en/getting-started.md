@@ -7,7 +7,7 @@ Welcome! This guide walks you through  installing `SwaziLang`, building the comp
 SwaziLang is a scripting language designed for natural Swahili-like syntax. It's easy to learn, expressive, and great for beginners or teaching programming.
 
 ---
-This course will teach you the basics and advanced comcepts of the language. so that you can be comfortable building programs with it.
+This course will teach you the basics and advanced concepts of the language. so that you can be comfortable building programs with it.
 
 
 ## What do you need before learning Swazi / SwaziLang
