@@ -15,18 +15,15 @@ function safeLog(req, colorFn, message, ...args) {
 async function execute(req, res) {
    try {
       const { code, filename } = req.body;
-      const tmpDir = path.join(req.scannedWD, ".temp");
-      const tmpFile = path.join(tmpDir, filename);
-
-      await fs.outputFile(tmpFile, code, "utf8");
-
-      const command = `swazi ${tmpFile}`;
-
+      const entryFile = path.join(req.scannedWD, filename);
+      
+      const command = `swazi ${entryFile}`;
+      
       let swaziOutput;
       try {
          safeLog(req, chalk.green, `Start Executing ${filename}`)
          const { stdout, stderr } = await execAsync(command, {
-            cwd: tmpDir,
+            cwd: req.scannedWD,
             timeout: 10000
          });
          swaziOutput = { stdout, stderr };
@@ -37,15 +34,9 @@ async function execute(req, res) {
             stderr: runErr.stderr
          };
       }
-
-      await fs.remove(tmpFile);
-
+      
       res.json({ output: swaziOutput });
    } catch (err) {
-      try {
-         const tmpFile = path.join(req.scannedWD, ".temp", "exec.sl");
-         await fs.remove(tmpFile);
-      } catch (cleanupErr) {}
       res.status(500).json({ error: err.message });
    }
 }
