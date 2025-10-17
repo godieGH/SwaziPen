@@ -11,6 +11,7 @@ import scanProject from "../src/scanner.js";
 import chalk from "chalk";
 
 import apiRoutes from "./routes/api.js";
+import attachTerminalHandlers from "./terminal.js"; // new
 
 let PORT = process.env.PORT || 5000;
 const app = express();
@@ -59,6 +60,13 @@ function startServer(
 
       // Emit shape identical to your API response: { filetree: [ initialFileTree ] }
       socket.emit("filetree:init", { filetree: [initialFileTree] });
+
+      // attach terminal handlers for this socket (node-pty)
+      try {
+         attachTerminalHandlers(socket, scannedWD);
+      } catch (err) {
+         console.error("Failed to attach terminal handlers:", err);
+      }
 
       socket.on("filetree:requestRefresh", async () => {
          try {
