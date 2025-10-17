@@ -31,7 +31,7 @@ function TopTabs({ active = 0, tabs = ["Console", "REPL"], onSwitchTab }) {
 
 function ConsoleFilterBar({
     active = 1,
-    tabs = ["All", "Info", "Warning", "Error"],
+    tabs = ["All"/*, "Info", "Warning", "Error"*/],
     onChangeFilter
 }) {
     return (
@@ -258,6 +258,33 @@ export default function SlideUpTerminal({
         } catch (e) {}
     }, []);
 
+    // Force-dispose the xterm instance (use before re-creating)
+    const forceDisposeConsoleXterm = useCallback(() => {
+        try {
+            if (consoleXtermRef.current) {
+                try {
+                    consoleXtermRef.current.dispose &&
+                        consoleXtermRef.current.dispose();
+                } catch (e) {}
+                consoleXtermRef.current = null;
+            }
+        } catch (e) {}
+        consoleFitRef.current = null;
+    }, []);
+
+    const forceDisposeReplXterm = useCallback(() => {
+        try {
+            if (replXtermRef.current) {
+                try {
+                    replXtermRef.current.dispose &&
+                        replXtermRef.current.dispose();
+                } catch (e) {}
+                replXtermRef.current = null;
+            }
+        } catch (e) {}
+        replFitRef.current = null;
+    }, []);
+
     // helper: cleanup console pty & listeners
     const killConsolePty = useCallback(() => {
         // emit kill even if null id? only when present
@@ -288,6 +315,16 @@ export default function SlideUpTerminal({
 
     // ensure console xterm exists and is attached to current container, (re)bind its onData emitter
     const ensureConsoleXterm = useCallback(() => {
+        if (!consoleContainerRef.current) {
+            // container isn't mounted yet — try again on next animation frame
+            requestAnimationFrame(() => {
+                try {
+                    ensureConsoleXterm();
+                } catch (e) {}
+            });
+            return;
+        }
+
         // Try re-attach existing terminal instance to current container
         if (consoleXtermRef.current) {
             try {
@@ -373,6 +410,15 @@ export default function SlideUpTerminal({
 
     // ensure repl xterm exists and is attached to current container, (re)bind its onData emitter
     const ensureReplXterm = useCallback(() => {
+        if (!replContainerRef.current) {
+            requestAnimationFrame(() => {
+                try {
+                    ensureReplXterm();
+                } catch (e) {}
+            });
+            return;
+        }
+
         if (replXtermRef.current) {
             try {
                 const term = replXtermRef.current;
@@ -471,6 +517,10 @@ export default function SlideUpTerminal({
     }, [runTrigger, isOpen]);
 
     const startConsoleRun = useCallback(() => {
+        try {
+            forceDisposeConsoleXterm();
+        } catch (e) {}
+
         // ensure UI terminal exists / attached
         ensureConsoleXterm();
 
@@ -580,102 +630,123 @@ export default function SlideUpTerminal({
         if (prevActiveRef.current !== activeTab) {
             // switched tabs
             if (activeTab === 0) {
-                // switched to Console -> start fresh run
+                // switched to Console -> start fresh run after a short delay so container ref is mounted
                 try {
-                    startConsoleRun();
+                    setTimeout(() => {
+                        try {
+                            startConsoleRun();
+                        } catch (e) {
+                            console.error(
+                                "Failed to restart console run (delayed):",
+                                e
+                            );
+                        }
+                    }, 40);
                 } catch (e) {
-                    console.error("Failed to restart console run:", e);
+                    console.error("Failed to schedule Console start:", e);
                 }
             } else if (activeTab === 1) {
-                // switched to REPL -> kill console and start repl
+                // switched to REPL -> kill console and start repl after a short delay
                 try {
-                    // ensure console is stopped
                     killConsolePty();
-                    // ensure repl xterm attached and start
-                    ensureReplXterm();
-
-                    // create new repl pty (reuse pattern used for console)
-                    // kill any previous repl pty handlers first
-                    safeOff("terminal:data", replOnDataRef);
-                    safeOff("terminal:exit", replOnExitRef);
-                    safeOff("terminal:error", replOnErrorRef);
-                    killReplPty(); // ensure any previous repl killed before we set new id
-
-                    const id = `repl-${Date.now()}-${Math.random()
-                        .toString(36)
-                        .slice(2, 8)}`;
-                    replPtyIdRef.current = id;
-                    const cols = replXtermRef.current
-                        ? replXtermRef.current.cols
-                        : 80;
-                    const rows = replXtermRef.current
-                        ? replXtermRef.current.rows
-                        : 24;
-
-                    const onData = ({ id: evId, data }) => {
-                        if (evId !== replPtyIdRef.current) return;
+                    setTimeout(() => {
                         try {
-                            replXtermRef.current &&
-                                replXtermRef.current.write(data);
-                        } catch (e) {}
-                    };
-                    const onExit = ({ id: evId, code, signal }) => {
-                        if (evId !== replPtyIdRef.current) return;
-                        try {
-                            replXtermRef.current &&
-                                replXtermRef.current.write(
-                                    `\r\n\n[process exited: ${code}]\r\n`
-                                );
-                        } catch (e) {}
-                        replPtyIdRef.current = null;
-                    };
-                    const onError = ({ id: evId, message }) => {
-                        if (evId !== replPtyIdRef.current) return;
-                        try {
-                            replXtermRef.current &&
-                                replXtermRef.current.write(
-                                    `\r\n\n[error] ${message}\r\n`
-                                );
-                        } catch (e) {}
-                    };
-
-                    replOnDataRef.current = onData;
-                    replOnExitRef.current = onExit;
-                    replOnErrorRef.current = onError;
-
-                    socket.on("terminal:data", onData);
-                    socket.on("terminal:exit", onExit);
-                    socket.on("terminal:error", onError);
-
-                    // request new repl
-                    try {
-                        socket.emit("terminal:create", {
-                            id,
-                            mode: "repl",
-                            cols,
-                            rows
-                        });
-                        setTimeout(() => {
                             try {
-                                replXtermRef.current &&
-                                    replXtermRef.current.setOption &&
-                                    replXtermRef.current.setOption(
-                                        "disableStdin",
-                                        false
-                                    );
+                                forceDisposeReplXterm();
                             } catch (e) {}
+
+                            // ensure repl xterm attached and start
+                            ensureReplXterm();
+
+                            // kill any previous repl pty handlers first
+                            safeOff("terminal:data", replOnDataRef);
+                            safeOff("terminal:exit", replOnExitRef);
+                            safeOff("terminal:error", replOnErrorRef);
+                            killReplPty(); // ensure previous repl killed
+
+                            const id = `repl-${Date.now()}-${Math.random()
+                                .toString(36)
+                                .slice(2, 8)}`;
+                            replPtyIdRef.current = id;
+                            const cols = replXtermRef.current
+                                ? replXtermRef.current.cols
+                                : 80;
+                            const rows = replXtermRef.current
+                                ? replXtermRef.current.rows
+                                : 24;
+
+                            const onData = ({ id: evId, data }) => {
+                                if (evId !== replPtyIdRef.current) return;
+                                try {
+                                    replXtermRef.current &&
+                                        replXtermRef.current.write(data);
+                                } catch (e) {}
+                            };
+                            const onExit = ({ id: evId, code, signal }) => {
+                                if (evId !== replPtyIdRef.current) return;
+                                try {
+                                    replXtermRef.current &&
+                                        replXtermRef.current.write(
+                                            `\r\n\n[process exited: ${code}]\r\n`
+                                        );
+                                } catch (e) {}
+                                replPtyIdRef.current = null;
+                            };
+                            const onError = ({ id: evId, message }) => {
+                                if (evId !== replPtyIdRef.current) return;
+                                try {
+                                    replXtermRef.current &&
+                                        replXtermRef.current.write(
+                                            `\r\n\n[error] ${message}\r\n`
+                                        );
+                                } catch (e) {}
+                            };
+
+                            replOnDataRef.current = onData;
+                            replOnExitRef.current = onExit;
+                            replOnErrorRef.current = onError;
+
+                            socket.on("terminal:data", onData);
+                            socket.on("terminal:exit", onExit);
+                            socket.on("terminal:error", onError);
+
+                            // request new repl
                             try {
-                                replXtermRef.current &&
-                                    replXtermRef.current.focus &&
-                                    replXtermRef.current.focus();
+                                socket.emit("terminal:create", {
+                                    id,
+                                    mode: "repl",
+                                    cols,
+                                    rows
+                                });
+                                setTimeout(() => {
+                                    try {
+                                        replXtermRef.current &&
+                                            replXtermRef.current.setOption &&
+                                            replXtermRef.current.setOption(
+                                                "disableStdin",
+                                                false
+                                            );
+                                    } catch (e) {}
+                                    try {
+                                        replXtermRef.current &&
+                                            replXtermRef.current.focus &&
+                                            replXtermRef.current.focus();
+                                    } catch (e) {}
+                                    try {
+                                        replFitRef.current &&
+                                            replFitRef.current.fit();
+                                    } catch (e) {}
+                                }, 50);
                             } catch (e) {}
-                            try {
-                                replFitRef.current && replFitRef.current.fit();
-                            } catch (e) {}
-                        }, 50);
-                    } catch (e) {}
+                        } catch (e) {
+                            console.error(
+                                "Failed to start REPL inside delayed callback:",
+                                e
+                            );
+                        }
+                    }, 40);
                 } catch (e) {
-                    console.error("Failed to start REPL on tab switch:", e);
+                    console.error("Failed to schedule REPL start:", e);
                 }
             }
         }
@@ -850,6 +921,7 @@ export default function SlideUpTerminal({
                             </div>
                         )}
                     </div>
+                    <BottomInput/>
                 </div>
             </div>
         </>

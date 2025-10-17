@@ -133,6 +133,28 @@ function SideBarContent({ onFileLoad }) {
       }
    };
 
+
+
+const getPreviousOpenedFile = useCallback(async () => {
+     try {
+        const {data} = await api.get("/api/get/previous/opened/file")
+       if(data && data.path) {
+         //handleFileSelect(data)
+         setTreeFileData(data)
+         fileContentMutation.mutate(data)
+       }
+     } catch (e) {
+       console.error(e)
+     }
+   }, [])
+   
+   useEffect(() => {
+     getPreviousOpenedFile()
+   }, [])
+
+
+
+
    if (isLoading) {
       return (
          <div style={{ padding: "10px" }}>

@@ -1,5 +1,5 @@
 // src/components/Editor.jsx
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@api/axios.js";
 import socket from "@api/socket.js";
@@ -164,8 +164,7 @@ function Editor() {
                //enableSnippets: true,
                showLineNumbers: true,
                tabSize: 2,
-               //wrap: true,
-               wrapMethod: "auto",
+               wrap: false,
                displayIndentGuides: true
             }}
          />
