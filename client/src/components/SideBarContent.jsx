@@ -86,7 +86,7 @@ function SideBarContent({ onFileLoad }) {
             ["file", variables.node.path, variables.node.id],
             data
          );
-         onFileLoad?.();
+         if(!variables.fromReload) onFileLoad?.();
       },
       onError: err => {
          console.error("Failed to fetch file content:", err);
@@ -144,6 +144,7 @@ function SideBarContent({ onFileLoad }) {
       try {
          const { data } = await api.get("/api/get/previous/opened/file");
          if (data && data.path) {
+            data.fromReload = true
             setTreeFileData(data);
             fileContentMutation.mutate(data);
          }
@@ -161,11 +162,11 @@ function SideBarContent({ onFileLoad }) {
       { id: "search", icon: VscSearch, label: "Search" },
       { id: "source-control", icon: VscSourceControl, label: "Source Control" },
       { id: "debug", icon: VscDebugAlt, label: "Run and Debug" },
-      { id: "extensions", icon: VscExtensions, label: "Extensions" }
+      /*{ id: "extensions", icon: VscExtensions, label: "Extensions" }*/
    ];
 
    const bottomIcons = [
-      { id: "account", icon: VscAccount, label: "Account" },
+      /*{ id: "account", icon: VscAccount, label: "Account" },*/
       { id: "settings", icon: VscSettingsGear, label: "Settings" }
    ];
 

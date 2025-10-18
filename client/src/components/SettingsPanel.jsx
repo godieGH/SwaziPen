@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { VscChevronRight, VscChevronDown, VscSearch } from 'react-icons/vsc';
+import useSettingsStore from '@stores/settingsStore';
 
 function SettingsPanel() {
   const [expandedSections, setExpandedSections] = useState({
@@ -10,29 +11,25 @@ function SettingsPanel() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [settings, setSettings] = useState({
-    // Appearance
-    theme: 'monokai',
-    textSize: 'medium',
-    nightMode: true,
-    
-    // Editor
-    fontSize: 14,
-    indentGuides: true,
-    lineNumbers: true,
-    wordWrap: false,
-    tabSize: 4,
-    lineHeight: 1.5,
-    fontFamily: 'Fira Code',
-    cursorStyle: 'line',
-    renderWhitespace: 'selection',
-    
-    // Advanced
-    autoSave: 'afterDelay',
-    formatOnSave: false,
-    minimap: true,
-    scrollBeyondLastLine: true
-  });
+  // Get individual settings directly - prevents infinite re-renders
+  const theme = useSettingsStore((state) => state.theme);
+  const textSize = useSettingsStore((state) => state.textSize);
+  const nightMode = useSettingsStore((state) => state.nightMode);
+  const fontSize = useSettingsStore((state) => state.fontSize);
+  const indentGuides = useSettingsStore((state) => state.indentGuides);
+  const lineNumbers = useSettingsStore((state) => state.lineNumbers);
+  const wordWrap = useSettingsStore((state) => state.wordWrap);
+  const tabSize = useSettingsStore((state) => state.tabSize);
+  const lineHeight = useSettingsStore((state) => state.lineHeight);
+  const fontFamily = useSettingsStore((state) => state.fontFamily);
+  const cursorStyle = useSettingsStore((state) => state.cursorStyle);
+  const renderWhitespace = useSettingsStore((state) => state.renderWhitespace);
+  const autoSave = useSettingsStore((state) => state.autoSave);
+  const formatOnSave = useSettingsStore((state) => state.formatOnSave);
+  const minimap = useSettingsStore((state) => state.minimap);
+  const scrollBeyondLastLine = useSettingsStore((state) => state.scrollBeyondLastLine);
+  
+  const updateSetting = useSettingsStore((state) => state.updateSetting);
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
@@ -41,22 +38,16 @@ function SettingsPanel() {
     }));
   };
 
-  const updateSetting = (key, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
-
   const themes = [
+    'Swazipen',
     'Monokai',
     'Dracula',
-    'One Dark Pro',
-    'GitHub Dark',
-    'Solarized Dark',
-    'Night Owl',
-    'Cobalt2',
-    'Material Theme'
+    'One_Dark',
+    'GitHub',
+    'GitHub_Dark',
+    'Solarized_Light',
+    'Solarized_Dark',
+    'Cobalt',
   ];
 
   const textSizes = ['Small', 'Medium', 'Large'];
@@ -64,7 +55,9 @@ function SettingsPanel() {
   const tabSizes = [2, 3, 4, 6, 8];
   const lineHeights = [1.2, 1.3, 1.4, 1.5, 1.6, 1.8, 2.0];
   const fontFamilies = [
+    'Noto Mono',
     'Fira Code',
+    'Menlo',
     'Consolas',
     'Monaco',
     'Courier New',
@@ -72,8 +65,8 @@ function SettingsPanel() {
     'JetBrains Mono',
     'Cascadia Code'
   ];
-  const cursorStyles = ['line', 'block', 'underline'];
-  const whitespaceOptions = ['none', 'selection', 'all'];
+  const cursorStyles = ['ace', 'slim'];
+  const whitespaceOptions = ['none', 'all'];
   const autoSaveOptions = ['off', 'afterDelay', 'onFocusChange'];
 
   // Filter settings based on search
@@ -112,7 +105,7 @@ function SettingsPanel() {
           {matchesSearch('Theme', 'Choose your color theme') && (
             <SettingRow label="Theme" description="Color theme">
               <Select
-                value={settings.theme}
+                value={theme}
                 onChange={(e) => updateSetting('theme', e.target.value)}
                 options={themes.map(t => ({ value: t.toLowerCase().replace(/\s+/g, '-'), label: t }))}
               />
@@ -122,7 +115,7 @@ function SettingsPanel() {
           {matchesSearch('Text Size', 'Application text size') && (
             <SettingRow label="Text Size" description="App text size">
               <Select
-                value={settings.textSize}
+                value={textSize}
                 onChange={(e) => updateSetting('textSize', e.target.value)}
                 options={textSizes.map(s => ({ value: s.toLowerCase(), label: s }))}
               />
@@ -132,7 +125,7 @@ function SettingsPanel() {
           {matchesSearch('Night Mode', 'Reduce eye strain in low light') && (
             <SettingRow label="Night Mode" description="Dark theme">
               <Toggle
-                checked={settings.nightMode}
+                checked={nightMode}
                 onChange={(checked) => updateSetting('nightMode', checked)}
               />
             </SettingRow>
@@ -148,7 +141,7 @@ function SettingsPanel() {
           {matchesSearch('Font Size', 'Editor font size') && (
             <SettingRow label="Font Size" description="Font size">
               <Select
-                value={settings.fontSize}
+                value={fontSize}
                 onChange={(e) => updateSetting('fontSize', Number(e.target.value))}
                 options={fontSizes.map(s => ({ value: s, label: `${s}px` }))}
               />
@@ -158,7 +151,7 @@ function SettingsPanel() {
           {matchesSearch('Font Family', 'Editor font family') && (
             <SettingRow label="Font Family" description="Font family">
               <Select
-                value={settings.fontFamily}
+                value={fontFamily}
                 onChange={(e) => updateSetting('fontFamily', e.target.value)}
                 options={fontFamilies.map(f => ({ value: f, label: f }))}
               />
@@ -168,7 +161,7 @@ function SettingsPanel() {
           {matchesSearch('Line Height', 'Space between lines') && (
             <SettingRow label="Line Height" description="Line spacing">
               <Select
-                value={settings.lineHeight}
+                value={lineHeight}
                 onChange={(e) => updateSetting('lineHeight', Number(e.target.value))}
                 options={lineHeights.map(h => ({ value: h, label: h.toString() }))}
               />
@@ -178,7 +171,7 @@ function SettingsPanel() {
           {matchesSearch('Indent Guides', 'Show indentation guides') && (
             <SettingRow label="Indent Guides" description="Indentation">
               <Toggle
-                checked={settings.indentGuides}
+                checked={indentGuides}
                 onChange={(checked) => updateSetting('indentGuides', checked)}
               />
             </SettingRow>
@@ -187,7 +180,7 @@ function SettingsPanel() {
           {matchesSearch('Line Numbers', 'Show line numbers') && (
             <SettingRow label="Line Numbers" description="Line numbers">
               <Toggle
-                checked={settings.lineNumbers}
+                checked={lineNumbers}
                 onChange={(checked) => updateSetting('lineNumbers', checked)}
               />
             </SettingRow>
@@ -196,7 +189,7 @@ function SettingsPanel() {
           {matchesSearch('Word Wrap', 'Wrap long lines') && (
             <SettingRow label="Word Wrap" description="Line wrapping">
               <Toggle
-                checked={settings.wordWrap}
+                checked={wordWrap}
                 onChange={(checked) => updateSetting('wordWrap', checked)}
               />
             </SettingRow>
@@ -205,7 +198,7 @@ function SettingsPanel() {
           {matchesSearch('Tab Size', 'Number of spaces per tab') && (
             <SettingRow label="Tab Size" description="Spaces/tab">
               <Select
-                value={settings.tabSize}
+                value={tabSize}
                 onChange={(e) => updateSetting('tabSize', Number(e.target.value))}
                 options={tabSizes.map(s => ({ value: s, label: s.toString() }))}
               />
@@ -215,7 +208,7 @@ function SettingsPanel() {
           {matchesSearch('Cursor Style', 'Editor cursor appearance') && (
             <SettingRow label="Cursor Style" description="Cursor type">
               <Select
-                value={settings.cursorStyle}
+                value={cursorStyle}
                 onChange={(e) => updateSetting('cursorStyle', e.target.value)}
                 options={cursorStyles.map(s => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }))}
               />
@@ -225,7 +218,7 @@ function SettingsPanel() {
           {matchesSearch('Render Whitespace', 'Show whitespace characters') && (
             <SettingRow label="Whitespace" description="Render mode">
               <Select
-                value={settings.renderWhitespace}
+                value={renderWhitespace}
                 onChange={(e) => updateSetting('renderWhitespace', e.target.value)}
                 options={whitespaceOptions.map(s => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }))}
               />
@@ -242,7 +235,7 @@ function SettingsPanel() {
           {matchesSearch('Auto Save', 'Automatically save files') && (
             <SettingRow label="Auto Save" description="Save mode">
               <Select
-                value={settings.autoSave}
+                value={autoSave}
                 onChange={(e) => updateSetting('autoSave', e.target.value)}
                 options={autoSaveOptions.map(s => ({ 
                   value: s, 
@@ -255,7 +248,7 @@ function SettingsPanel() {
           {matchesSearch('Format On Save', 'Format files on save') && (
             <SettingRow label="Format On Save" description="Auto format">
               <Toggle
-                checked={settings.formatOnSave}
+                checked={formatOnSave}
                 onChange={(checked) => updateSetting('formatOnSave', checked)}
               />
             </SettingRow>
@@ -264,7 +257,7 @@ function SettingsPanel() {
           {matchesSearch('Minimap', 'Show code minimap') && (
             <SettingRow label="Minimap" description="Code overview">
               <Toggle
-                checked={settings.minimap}
+                checked={minimap}
                 onChange={(checked) => updateSetting('minimap', checked)}
               />
             </SettingRow>
@@ -273,7 +266,7 @@ function SettingsPanel() {
           {matchesSearch('Scroll Beyond Last Line', 'Allow scrolling past last line') && (
             <SettingRow label="Scroll Beyond" description="Last line scroll">
               <Toggle
-                checked={settings.scrollBeyondLastLine}
+                checked={scrollBeyondLastLine}
                 onChange={(checked) => updateSetting('scrollBeyondLastLine', checked)}
               />
             </SettingRow>

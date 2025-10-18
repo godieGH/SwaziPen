@@ -7,8 +7,78 @@ const initialState = {
   newContent: "",
   notsaved: false,
   deleted: false,
-  theme: "swazipen"/*"github_dark"*/,
   mode: null,
+};
+
+// Map file extensions to Ace editor modes
+const getAceMode = (filename) => {
+  if (!filename) return null;
+  
+  const lower = filename.toLowerCase();
+  const extension = lower.split('.').pop();
+  
+  // Extension to Ace mode mapping
+  const modeMap = {
+    // Programming languages
+    js: "javascript",
+    jsx: "javascript",
+    ts: "typescript",
+    tsx: "typescript",
+    py: "python",
+    java: "java",
+    c: "c_cpp",
+    cpp: "c_cpp",
+    cc: "c_cpp",
+    cxx: "c_cpp",
+    h: "c_cpp",
+    hpp: "c_cpp",
+    cs: "csharp",
+    php: "php",
+    rb: "ruby",
+    go: "golang",
+    rs: "rust",
+    swift: "swift",
+    kt: "kotlin",
+    scala: "scala",
+    
+    // Web languages
+    html: "html",
+    htm: "html",
+    css: "css",
+    scss: "scss",
+    sass: "sass",
+    less: "less",
+    
+    // Markup/Config
+    json: "json",
+    xml: "xml",
+    yaml: "yaml",
+    yml: "yaml",
+    toml: "toml",
+    md: "markdown",
+    markdown: "markdown",
+    
+    // Shell/Scripts
+    sh: "sh",
+    bash: "sh",
+    zsh: "sh",
+    bat: "batchfile",
+    cmd: "batchfile",
+    ps1: "powershell",
+    
+    // Database
+    sql: "sql",
+    
+    // Other
+    txt: "text",
+    log: "text",
+    
+    // Custom - Swazi language
+    sl: "swazilang",
+    swz: "swazilang",
+  };
+  
+  return modeMap[extension] || null;
 };
 
 const useLoadedFileStore = create((set) => ({
@@ -22,12 +92,9 @@ const useLoadedFileStore = create((set) => ({
   },
 
   loadFileName: (name) => {
-    const lower = (name || "").toLowerCase();
-    const isSwazi = /\.sl$|\.swz$/i.test(lower); // matches .sl or .swz
     set(() => ({
       filename: name,
-      mode: isSwazi ? "swazilang" : null,
-      theme: isSwazi ? "swazipen" : "swazipen"
+      mode: getAceMode(name),
     }));
   },
 
