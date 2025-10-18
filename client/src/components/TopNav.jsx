@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useLoadedFileStore from "@stores/loadedFile.js";
 import "@scss/TopNav.scss";
 import MenuIcon from "@components/MenuIcon.jsx";
-import { FaPlay } from "react-icons/fa";
+import { FaTerminal } from "react-icons/fa";
 import SideBar from "@components/SideBar.jsx";
 import Terminal from "@components/Terminal.jsx";
 
@@ -41,7 +41,7 @@ function TopNav() {
 
         <div className="other-actions" style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <div>{/* reserved */}</div>
-          <div><FaPlay onClick={handleExecute} style={{ cursor: "pointer" }} /></div>
+          <div><FaTerminal onClick={handleExecute} style={{ cursor: "pointer" }} /></div>
         </div>
 
         <div className="terminal-container">

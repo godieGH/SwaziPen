@@ -1,4 +1,3 @@
-// client/src/components/Terminal.jsx
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import "tailwindcss/tailwind.css";
 import { Terminal as XTerm } from "@xterm/xterm";
@@ -7,49 +6,96 @@ import "@xterm/xterm/css/xterm.css";
 import socket from "@api/socket.js";
 import useLoadedFileStore from "@stores/loadedFile.js";
 
-/* Tabs and UI kept as you had them. Drag logic uses pointer events for reliability. */
+/* Small UI polish to make the panel look like a classic terminal:
+   - Added a TerminalHeader with "traffic light" buttons and a centered title.
+   - Restyled tabs to be subtle, compact and terminal-like.
+   - Compressed filter bar and moved icons to feel more like terminal controls.
+   - Bottom input now shows a monospace prompt line to match terminal vibes.
+   - Kept all existing xterm & socket logic intact; only UI changes.
+*/
 
-function TopTabs({ active = 0, tabs = ["Console", "REPL"], onSwitchTab }) {
+function TerminalHeader({ title, activeTab, onSwitchTab }) {
     return (
-        <div className="select-none flex items-center gap-4 px-3 pt-2 pb-1 border-b border-slate-700">
-            {tabs.map((t, i) => (
-                <div
-                    key={t}
-                    className={`text-sm px-2 pb-2 ${
-                        i === active
-                            ? "text-white border-b-2 border-slate-400"
-                            : "text-slate-400"
-                    }`}
-                    onClick={() => onSwitchTab && onSwitchTab(i)}
-                >
-                    {t}
+        <div className="flex items-center justify-between px-3 py-2 select-none border-b border-slate-800 bg-gradient-to-b from-[#0b0b0b] to-[#0f0f0f]">
+            <div className="flex items-center gap-3">
+                {/* traffic lights */}
+                <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_0_3px_rgba(255,0,0,0.04)]" />
+                    <div className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_0_3px_rgba(255,200,0,0.04)]" />
+                    <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(0,255,120,0.04)]" />
                 </div>
-            ))}
+
+                {/* compact tabs / title area */}
+                <div className="flex items-center gap-2 ml-1">
+                    <div
+                        onClick={() => onSwitchTab && onSwitchTab(0)}
+                        className={`text-xs px-2 py-1 rounded-md cursor-pointer ${
+                            activeTab === 0
+                                ? "bg-slate-800 text-white"
+                                : "text-slate-400 hover:bg-slate-900"
+                        }`}
+                    >
+                        Console
+                    </div>
+                    <div
+                        onClick={() => onSwitchTab && onSwitchTab(1)}
+                        className={`text-xs px-2 py-1 rounded-md cursor-pointer ${
+                            activeTab === 1
+                                ? "bg-slate-800 text-white"
+                                : "text-slate-400 hover:bg-slate-900"
+                        }`}
+                    >
+                        REPL
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex-1 text-center pointer-events-none">
+                <div className="text-[13px] text-slate-300 font-mono">
+                    {title}
+                </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+                {/* small controls (purely decorative) */}
+                <svg
+                    className="w-4 h-4 text-slate-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                >
+                    <path
+                        d="M6 12h12"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                    />
+                </svg>
+                <svg
+                    className="w-4 h-4 text-slate-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                >
+                    <path
+                        d="M6 6h12M6 18h12"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                    />
+                </svg>
+            </div>
         </div>
     );
 }
 
-function ConsoleFilterBar({
-    active = 1,
-    tabs = ["All"/*, "Info", "Warning", "Error"*/],
-    onChangeFilter
-}) {
+function ConsoleFilterBar({ active = 0, tabs = ["All"], onChangeFilter }) {
     return (
-        <div className="select-none flex items-center justify-between px-3 py-2 border-b border-slate-800">
-            <div className="flex items-center gap-2">
+        <div className="select-none flex items-center justify-between px-3 py-1 border-b border-slate-800 bg-[#0b0b0b]">
+            <div className="flex items-center gap-2 text-xs">
                 {tabs.map((t, i) => (
                     <button
                         key={t}
-                        className={`text-xs ${
-                            i === active ? "px-2 py-1 rounded bg-slate-700" : ""
-                        } ${
-                            t === "All"
-                                ? "text-white"
-                                : t === "Info"
-                                ? "text-slate-400"
-                                : t === "Warning"
-                                ? "text-amber-400"
-                                : "text-rose-400"
+                        className={`text-[12px] ${
+                            i === active ? "px-2 py-1 rounded bg-slate-800 text-white" : "text-slate-400"
                         }`}
                         onClick={() => onChangeFilter(i)}
                     >
@@ -59,7 +105,7 @@ function ConsoleFilterBar({
             </div>
             <div className="flex items-center gap-3">
                 <svg
-                    className="w-5 h-5 text-slate-400"
+                    className="w-4 h-4 text-slate-500"
                     viewBox="0 0 24 24"
                     fill="none"
                 >
@@ -71,7 +117,7 @@ function ConsoleFilterBar({
                     />
                 </svg>
                 <svg
-                    className="w-5 h-5 text-slate-400"
+                    className="w-4 h-4 text-slate-500"
                     viewBox="0 0 24 24"
                     fill="none"
                 >
@@ -98,10 +144,22 @@ function ConsoleArea({ children }) {
     );
 }
 
-function BottomInput({ children }) {
+function BottomInput({ filename }) {
+    // simple, decorative prompt row so the panel reads like a terminal UI.
     return (
-        <div className="border-t border-slate-800 px-3 py-3 flex items-center">
-            <div className="flex-1 ml-2 text-slate-500">{children}</div>
+        <div className="border-t border-slate-800 px-3 py-3 flex items-center bg-[#070707]">
+            <div className="text-slate-400 font-mono text-xs select-none">
+                {/*user@project:~*/}$
+            </div>
+            <div className="flex-1 ml-3 text-slate-300 font-mono text-xs truncate">
+                {filename ? ` ${filename}` : ""}
+            </div>
+            {/* static caret to hint at interactivity */}
+            <div
+                className="ml-2 w-2 h-4 bg-slate-300/80"
+                style={{ opacity: 0.9 }}
+                aria-hidden
+            />
         </div>
     );
 }
@@ -369,14 +427,14 @@ export default function SlideUpTerminal({
                 fontFamily:
                     "Noto Mono, Menlo, Monaco, Consolas, 'Courier New', monospace",
                 fontSize: 12,
-                theme: { background: "#111111", foreground: "#e5e7eb" }
+                theme: { background: "#0b0b0b", foreground: "#e5e7eb" }
             });
             const fit = new FitAddon();
             try {
                 term.loadAddon(fit);
             } catch (e) {}
             if (consoleContainerRef.current) {
-                consoleContainerRef.current.style.background = "#111111";
+                consoleContainerRef.current.style.background = "#0b0b0b";
                 consoleContainerRef.current.tabIndex = 0;
             }
             try {
@@ -459,14 +517,14 @@ export default function SlideUpTerminal({
                 fontFamily:
                     "Noto Mono, Menlo, Monaco, Consolas, 'Courier New', monospace",
                 fontSize: 12,
-                theme: { background: "#111111", foreground: "#e5e7eb" }
+                theme: { background: "#0b0b0b", foreground: "#e5e7eb" }
             });
             const fit = new FitAddon();
             try {
                 term.loadAddon(fit);
             } catch (e) {}
             if (replContainerRef.current) {
-                replContainerRef.current.style.background = "#111111";
+                replContainerRef.current.style.background = "#0b0b0b";
                 replContainerRef.current.tabIndex = 0;
             }
             try {
@@ -860,8 +918,11 @@ export default function SlideUpTerminal({
             )}
             <div
                 ref={panelRef}
-                className="bg-[#111111] rounded-t-2xl shadow-2xl border border-slate-800 overflow-hidden"
-                style={panelStyle}
+                className="shadow-2xl border border-slate-800 overflow-hidden rounded-t-lg"
+                style={{
+                    ...panelStyle,
+                    background: "linear-gradient(180deg, #0b0b0b, #0f0f0f)"
+                }}
             >
                 {/* drag handle (use pointer events attached above) */}
                 <div
@@ -871,14 +932,13 @@ export default function SlideUpTerminal({
                     <div className="w-12 h-1 rounded-full bg-slate-600" />
                 </div>
 
-                <div
-                    className="flex flex-col"
-                    style={{ height: "calc(100% - 24px)" }}
-                >
-                    <TopTabs
-                        active={activeTab}
+                <div className="flex flex-col" style={{ height: "calc(100% - 24px)" }}>
+                    <TerminalHeader
+                        title={activeTab === 0 ? "Console" : "REPL"}
+                        activeTab={activeTab}
                         onSwitchTab={i => setActiveTab(i)}
                     />
+
                     <ConsoleFilterBar
                         active={consoleFilter}
                         onChangeFilter={i => setConsoleFilter(i)}
@@ -890,7 +950,7 @@ export default function SlideUpTerminal({
                             flex: "1 1 0",
                             minHeight: 0,
                             fontSize: "14px",
-                            padding: "5px"
+                            padding: "6px"
                         }}
                     >
                         {/* Console tab */}
@@ -901,7 +961,9 @@ export default function SlideUpTerminal({
                                     style={{
                                         width: "100%",
                                         height: "100%",
-                                        background: "#111111"
+                                        background: "#0b0b0b",
+                                        borderRadius: 0,
+                                        boxSizing: "border-box"
                                     }}
                                 />
                             </div>
@@ -915,13 +977,16 @@ export default function SlideUpTerminal({
                                     style={{
                                         width: "100%",
                                         height: "100%",
-                                        background: "#111111"
+                                        background: "#0b0b0b",
+                                        borderRadius: 0,
+                                        boxSizing: "border-box"
                                     }}
                                 />
                             </div>
                         )}
                     </div>
-                    <BottomInput/>
+
+                    <BottomInput filename={currentFilename} />
                 </div>
             </div>
         </>

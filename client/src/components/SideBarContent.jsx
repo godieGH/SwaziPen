@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash.debounce";
 import api from "@api/axios.js";
 import socket from "@api/socket.js";
@@ -6,6 +6,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useLoadedFileStore from "@stores/loadedFile.js";
 import FileTree from "@components/FileTree.jsx";
 import Skeleton from "@components/Skeletons/Skeleton.jsx";
+import { 
+  VscFiles, 
+  VscSearch, 
+  VscSourceControl, 
+  VscExtensions,
+  VscDebugAlt,
+  VscAccount,
+  VscSettingsGear 
+} from "react-icons/vsc";
 
 async function fetchFileTree() {
    const { data } = await api.get("/api/filetree");
@@ -18,6 +27,7 @@ async function fetchFileContent(payload) {
 }
 
 function SideBarContent({ onFileLoad }) {
+   const [activeView, setActiveView] = useState("explorer");
    const queryClient = useQueryClient();
 
    const { data, isLoading, isError, error } = useQuery({
@@ -28,14 +38,9 @@ function SideBarContent({ onFileLoad }) {
       retry: 3
    });
 
-   // Listen for socket pushes and keep the react-query cache in sync.
-   // We rely on the server to emit the same payload shape your REST API returns:
-   // { filetree: [...] } so replacing the query data with the socket payload will
-   // update `data` used below and re-render the FileTree.
    useEffect(() => {
       function handleTreePayload(payload) {
          if (!payload) return;
-         // Overwrite the cached filetree query with the new payload from socket
          queryClient.setQueryData(["filetree"], payload);
       }
 
@@ -85,14 +90,7 @@ function SideBarContent({ onFileLoad }) {
       payload => {
          debouncedSelect(payload);
       },
-      [
-         debouncedSelect,
-         fileContentMutation,
-         queryClient,
-         loadFileName,
-         loadContent,
-         onFileLoad
-      ]
+      [debouncedSelect]
    );
 
    const handleNewFile = async payload => {
@@ -102,6 +100,7 @@ function SideBarContent({ onFileLoad }) {
          window.alert(e.message);
       }
    };
+
    const handleNewFolder = async payload => {
       try {
          await api.post("/api/create/new/folder", payload);
@@ -109,22 +108,23 @@ function SideBarContent({ onFileLoad }) {
          window.alert(e.message);
       }
    };
+
    const handleDelete = async payload => {
       try {
-        //useLoadedFileStore.getState().reset()
          await api.post("/api/remove/dir/file/", payload);
       } catch (e) {
          window.alert(e.message);
       }
    };
+
    const handleRename = async payload => {
       try {
-         //useLoadedFileStore.getState().reset()
          await api.post("/api/rename/dir/file/", payload);
       } catch (e) {
          window.alert(e.message);
       }
    };
+
    const handlePaste = async payload => {
       try {
          await api.post("/api/paste", payload);
@@ -133,73 +133,148 @@ function SideBarContent({ onFileLoad }) {
       }
    };
 
+   const getPreviousOpenedFile = useCallback(async () => {
+      try {
+         const { data } = await api.get("/api/get/previous/opened/file");
+         if (data && data.path) {
+            setTreeFileData(data);
+            fileContentMutation.mutate(data);
+         }
+      } catch (e) {
+         console.error(e);
+      }
+   }, []);
 
-
-const getPreviousOpenedFile = useCallback(async () => {
-     try {
-        const {data} = await api.get("/api/get/previous/opened/file")
-       if(data && data.path) {
-         //handleFileSelect(data)
-         setTreeFileData(data)
-         fileContentMutation.mutate(data)
-       }
-     } catch (e) {
-       console.error(e)
-     }
-   }, [])
-   
    useEffect(() => {
-     getPreviousOpenedFile()
-   }, [])
+      getPreviousOpenedFile();
+   }, []);
 
+   const iconButtons = [
+      { id: "explorer", icon: VscFiles, label: "Explorer" },
+      { id: "search", icon: VscSearch, label: "Search" },
+      { id: "source-control", icon: VscSourceControl, label: "Source Control" },
+      { id: "debug", icon: VscDebugAlt, label: "Run and Debug" },
+      { id: "extensions", icon: VscExtensions, label: "Extensions" }
+   ];
 
+   const bottomIcons = [
+      { id: "account", icon: VscAccount, label: "Account" },
+      { id: "settings", icon: VscSettingsGear, label: "Settings" }
+   ];
 
+   const renderContent = () => {
+      if (activeView !== "explorer") {
+         return (
+            <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+               {activeView === "search" && "Search functionality"}
+               {activeView === "source-control" && "Source Control"}
+               {activeView === "debug" && "Run and Debug"}
+               {activeView === "extensions" && "Extensions"}
+               {activeView === "account" && "Account"}
+               {activeView === "settings" && "Settings"}
+            </div>
+         );
+      }
 
-   if (isLoading) {
+      if (isLoading) {
+         return (
+            <div className="p-2.5">
+               <Skeleton
+                  variant="text"
+                  count={5}
+                  lineWidths={["100%", "96%", "100%", "60%", "66%"]}
+                  height={18}
+               />
+            </div>
+         );
+      }
+
+      if (isError) {
+         return (
+            <div className="p-5 px-2.5 text-red-500">
+               Error: {error.message}
+            </div>
+         );
+      }
+
       return (
-         <div style={{ padding: "10px" }}>
-            <Skeleton
-               variant="text"
-               count={5}
-               lineWidths={["100%", "96%", "100%", "60%", "66%"]}
-               height={18}
+         <>
+            {fileContentMutation.isLoading && (
+               <div className="py-2 px-2.5 text-xs">
+                  Loading file…
+               </div>
+            )}
+            {fileContentMutation.isError && (
+               <div className="py-2 px-2.5 text-orange-500 text-xs">
+                  Could not load file: {fileContentMutation.error?.message}
+               </div>
+            )}
+
+            <FileTree
+               fileTree={data?.filetree}
+               onSelect={handleFileSelect}
+               onNewFile={handleNewFile}
+               onNewFolder={handleNewFolder}
+               onDelete={handleDelete}
+               onRename={handleRename}
+               onPaste={handlePaste}
             />
-         </div>
+         </>
       );
-   }
+   };
 
-   if (isError) {
-      return (
-         <div style={{ padding: "20px 10px", color: "red" }}>
-            Error: {error.message}
-         </div>
-      );
-   }
-
-   // NOTE: data is expected to be the same shape returned by your API: { filetree: [...] }
    return (
-      <>
-         {fileContentMutation.isLoading && (
-            <div style={{ padding: "8px 10px", fontSize: 12 }}>
-               Loading file…
+      <div className="flex h-full">
+         {/* Activity Bar - Thin Icon Column */}
+         <div className="w-12 flex flex-col items-center border-r border-[#191919]">
+            {/* Top Icons */}
+            <div className="flex-1 flex flex-col items-center pt-2">
+               {iconButtons.map(({ id, icon: Icon, label }) => (
+                  <button
+                     key={id}
+                     onClick={() => setActiveView(id)}
+                     className={`w-12 h-12 flex items-center justify-center relative group transition-colors ${
+                        activeView === id 
+                           ? "text-white" 
+                           : "text-gray-400 hover:text-white"
+                     }`}
+                     title={label}
+                  >
+                     <Icon size={24} />
+                     {activeView === id && (
+                        <div className="absolute left-0 w-0.5 h-12 bg-[#00bac8]" />
+                     )}
+                  </button>
+               ))}
             </div>
-         )}
-         {fileContentMutation.isError && (
-            <div style={{ padding: "8px 10px", color: "orange", fontSize: 12 }}>
-               Could not load file: {fileContentMutation.error?.message}
-            </div>
-         )}
 
-         <FileTree
-            fileTree={data?.filetree}
-            onSelect={handleFileSelect}
-            onNewFile={handleNewFile}
-            onNewFolder={handleNewFolder}
-            onDelete={handleDelete}
-            onRename={handleRename}
-            onPaste={handlePaste}
-         />
-      </>
+            {/* Bottom Icons */}
+            <div className="flex flex-col items-center pb-2">
+               {bottomIcons.map(({ id, icon: Icon, label }) => (
+                  <button
+                     key={id}
+                     onClick={() => setActiveView(id)}
+                     className={`w-12 h-12 flex items-center justify-center relative group transition-colors ${
+                        activeView === id 
+                           ? "text-white" 
+                           : "text-gray-400 hover:text-white"
+                     }`}
+                     title={label}
+                  >
+                     <Icon size={24} />
+                     {activeView === id && (
+                        <div className="absolute left-0 w-0.5 h-12 bg-white" />
+                     )}
+                  </button>
+               ))}
+            </div>
+         </div>
+
+         {/* Main Sidebar Content */}
+         <div className="flex-1 overflow-hidden">
+            {renderContent()}
+         </div>
+      </div>
    );
 }
 
