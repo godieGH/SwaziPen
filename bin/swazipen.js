@@ -5,6 +5,7 @@ import { program } from "commander";
 import chalk from "chalk";
 import chokidar from "chokidar";
 import inquirer from "inquirer";
+import { exec } from "child_process";
 
 import pkg from "../package.json" with { type: "json" };
 import scanProject from "../src/scanner.js";
@@ -15,10 +16,15 @@ program
   .description(pkg.description)
   .version(pkg.version, "-v, --version", "output the current version");
 
+// new options: --compiler/-c and --open
 program
-  .argument("[path]", "path to project folder (defaults to current folder)")
   .option("-p, --port <port>", "server will run on custom port")
   .option("-q, --quiet", "server will run on quietly, no logs (requests, file operation logs etc), only errors")
+  .option("-c, --compiler <path>", "path to swazi binary (overrides system PATH)")
+  .option("--open", "open the default browser automatically to the local server");
+
+program
+  .argument("[path]", "path to project folder (defaults to current folder)")
   .action(async (source, options) => {
     try {
       process.stdout.write('\x1Bc');
@@ -127,7 +133,49 @@ program
          /\.swp$/,
          /\.(png|jpg|jpeg|gif|ico|svg|mp4|mov|mp3|wav)$/
       ] });
-      startServer(fileTree, port, projectPath, watcher, options);
+
+      // validate compiler path (if provided)
+      let compilerPath;
+      if (options.compiler) {
+        compilerPath = path.resolve(options.compiler);
+        if (!fs.existsSync(compilerPath) || !fs.lstatSync(compilerPath).isFile()) {
+          console.error(
+            chalk.red("Error:") +
+              " Provided compiler path does not exist or is not a file:"
+          );
+          console.error("  " + chalk.yellow(compilerPath));
+          process.exit(1);
+        }
+      }
+
+      // Pass compilerPath and open flag into server options
+      const serverOptions = Object.assign({}, options, {
+        compilerPath: compilerPath,
+        open: Boolean(options.open)
+      });
+
+      const srvResult = startServer(fileTree, port, projectPath, watcher, serverOptions);
+
+      // if user requested --open, attempt to open the browser to the local URL
+      if (serverOptions.open) {
+        const localUrl = `http://localhost:${port}`;
+        const opener =
+          process.platform === "win32"
+            ? "start"
+            : process.platform === "darwin"
+            ? "open"
+            : "xdg-open";
+        try {
+          // fire-and-forget; best-effort cross-platform open
+          exec(`${opener} "${localUrl}"`, (err) => {
+            if (err) {
+              console.error(chalk.yellow("Warning: failed to open browser:"), err.message);
+            }
+          });
+        } catch (e) {
+          console.error(chalk.yellow("Warning: failed to open browser:"), e.message);
+        }
+      }
     } catch (err) {
       console.error(chalk.red("Unhandled error: "), chalk.grey(err.message));
       process.exit(1);

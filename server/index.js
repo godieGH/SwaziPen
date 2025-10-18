@@ -34,9 +34,10 @@ function startServer(
    prt = PORT,
    scannedWD,
    watcher,
-   { quiet }
+   options = {}
 ) {
    PORT = prt;
+   const { quiet, compilerPath } = options; // compilerPath is now supported
 
    if (!quiet) app.use(morgan("dev"));
 
@@ -63,7 +64,8 @@ function startServer(
 
       // attach terminal handlers for this socket (node-pty)
       try {
-         attachTerminalHandlers(socket, scannedWD);
+         // pass compilerPath so terminal spawns use the provided executable
+         attachTerminalHandlers(socket, scannedWD, compilerPath);
       } catch (err) {
          console.error("Failed to attach terminal handlers:", err);
       }
@@ -127,6 +129,8 @@ function startServer(
       req.scannedWD = scannedWD;
       req.initialFileTree = initialFileTree;
       req.io = io;
+      // expose compilerPath to request handlers (execute controller uses this)
+      req.compilerPath = compilerPath;
       next();
    });
 

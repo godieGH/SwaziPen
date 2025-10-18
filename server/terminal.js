@@ -21,7 +21,7 @@ import crypto from "crypto";
  *  - terminal:error { id, message }
  *  - terminal:killed { id }
  */
-export default function attachTerminalHandlers(socket, scannedWD) {
+export default function attachTerminalHandlers(socket, scannedWD, compilerPath) {
     const terminals = new Map();
 
     function makeId(prefix = "term") {
@@ -72,7 +72,9 @@ export default function attachTerminalHandlers(socket, scannedWD) {
             const env = Object.assign({}, process.env);
             env.TERM = env.TERM || "xterm-color";
 
-            const p = pty.spawn("swazi", [runPath], {
+            const executable = compilerPath || "swazi";
+
+            const p = pty.spawn(executable, [runPath], {
                 name: "xterm-color",
                 cols,
                 rows,
@@ -116,7 +118,9 @@ export default function attachTerminalHandlers(socket, scannedWD) {
             const env = Object.assign({}, process.env);
             env.TERM = env.TERM || "xterm-color";
 
-            const p = pty.spawn("swazi", ["-i"], {
+            const executable = compilerPath || "swazi";
+
+            const p = pty.spawn(executable, ["-i"], {
                 name: "xterm-color",
                 cols,
                 rows,

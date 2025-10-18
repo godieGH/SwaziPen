@@ -17,7 +17,9 @@ async function execute(req, res) {
       const { code, filename } = req.body;
       const entryFile = path.join(req.scannedWD, filename);
       
-      const command = `swazi ${entryFile}`;
+      const compiler = req.compilerPath || "swazi";
+      // quote paths to be safe for spaces in paths
+      const command = `"${compiler}" "${entryFile}"`;
       
       let swaziOutput;
       try {
