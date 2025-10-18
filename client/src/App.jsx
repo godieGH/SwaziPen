@@ -4,7 +4,7 @@ import SideBarContent from "@components/SideBarContent.jsx";
 
 function App() {
    return (
-      <div className="flex h-screen">
+      <div className="flex h-screen overflow-hidden">
          {/* Sidebar (hidden on small, visible on md and above) */}
          <div className="hidden md:block w-64">
             <SideBarContent />
@@ -18,7 +18,10 @@ function App() {
             </div>
 
             {/* Editor area */}
-            <div className="flex-1 p-2 overflow-auto">
+            <div style={{
+              overflow: "hidden",
+              height: "83dvh",
+            }}>
                <Editor />
             </div>
          </div>

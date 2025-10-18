@@ -7,7 +7,7 @@ import "@scss/SideBar.scss";
 import SideBarContent from "@components/SideBarContent.jsx";
 
 
-const SideBar = ({ isOpen, onToggle }) => {
+const SideBar = React.memo(({ isOpen, onToggle }) => {
    const sidebarRef = useRef(null);
    const touchStartX = useRef(0);
    const touchStartY = useRef(0);
@@ -145,7 +145,7 @@ const SideBar = ({ isOpen, onToggle }) => {
          </aside>
       </>
    );
-};
+});
 
 SideBar.propTypes = {
    isOpen: PropTypes.bool.isRequired,

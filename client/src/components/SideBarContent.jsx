@@ -16,6 +16,13 @@ import {
   VscSettingsGear 
 } from "react-icons/vsc";
 
+import SettingsPanel from '@components/SettingsPanel.jsx';
+import SearchPanel from '@components/SearchPanel.jsx';
+import DebugPanel from '@components/DebugPanel.jsx';
+import SourceControl from '@components/SourceControl.jsx';
+import ProfilePanel from '@components/ProfilePanel.jsx';
+import ExtensionsPanel from '@components/ExtensionsPanel.jsx';
+
 async function fetchFileTree() {
    const { data } = await api.get("/api/filetree");
    return data;
@@ -163,6 +170,26 @@ function SideBarContent({ onFileLoad }) {
    ];
 
    const renderContent = () => {
+      
+    if (activeView === "search") {
+      return <SearchPanel />;
+    }
+    if (activeView === "source-control") {
+      return <SourceControl />;
+    }
+    if (activeView === "debug") {
+      return <DebugPanel />;
+    }
+    if (activeView === "extensions") {
+      return <ExtensionsPanel />;
+    }
+    if (activeView === "account") {
+      return <ProfilePanel />;
+    }
+    if (activeView === "settings") {
+      return <SettingsPanel />;
+    }
+      
       if (activeView !== "explorer") {
          return (
             <div className="flex items-center justify-center h-full text-gray-500 text-sm">
@@ -271,7 +298,7 @@ function SideBarContent({ onFileLoad }) {
          </div>
 
          {/* Main Sidebar Content */}
-         <div className="flex-1 overflow-hidden">
+         <div className="flex-1 overflow-scroll">
             {renderContent()}
          </div>
       </div>

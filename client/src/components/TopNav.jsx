@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useLoadedFileStore from "@stores/loadedFile.js";
 import "@scss/TopNav.scss";
 import MenuIcon from "@components/MenuIcon.jsx";
-import { FaTerminal } from "react-icons/fa";
+import { FaTerminal, FaRedo } from "react-icons/fa";
 import SideBar from "@components/SideBar.jsx";
 import Terminal from "@components/Terminal.jsx";
 
@@ -41,6 +41,9 @@ function TopNav() {
 
         <div className="other-actions" style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <div>{/* reserved */}</div>
+          <div className="px-3" onClick={() => {
+            window.location.reload()
+          }} ><FaRedo size={12}/></div>
           <div><FaTerminal onClick={handleExecute} style={{ cursor: "pointer" }} /></div>
         </div>
 

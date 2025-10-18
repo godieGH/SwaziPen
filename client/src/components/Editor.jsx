@@ -151,7 +151,7 @@ function Editor() {
             mode={mode}
             theme={theme}
             width="100%"
-            height="86dvh"
+            height="100%"
             fontSize={14}
             lineHeight={22}
             onLoad={handleLoad}
