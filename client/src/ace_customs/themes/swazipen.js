@@ -117,6 +117,11 @@ ace.define(
       color: #f19cec;
       font-weight: 100;
     }
+    .ace-swazipen .ace_keyword.ace_control.ace_ainaya {
+      color: #f19cec;
+      font-weight: 100;
+      font-style: italic;
+    }
 
     /* SwaziLang special keywords (other storage-like words) */
     .ace-swazipen .ace_storage {

@@ -31,7 +31,7 @@ ace.define(
             var builtinClasses =
                 "Seti|Ramani|Object|Orodha|Bool|Namba|Neno|Ahadi|Makosa|MakosaYaAina|MakosaYaMrejeo|MakosaYaMpangilio|" +
                 "Hesabu|soma";
-            var builtinConstants = "kweli|sikweli";
+            var builtinConstants = "kweli|sikweli|nan|inf";
             var builtinFunctions = "chapisha|andika";
 
             // Master keyword map (case-sensitive)
@@ -100,6 +100,10 @@ ace.define(
 
                     // Declarations / class-like constructs
                     {
+                        token: ["keyword", "text", "support.function"],
+                        regex: "(kazi)(\\s+)(" + identifierRe + ")"
+                    },
+                    {
                         token: ["storage.type", "text", "entity.name.class"],
                         regex: "(muundo)(\\s+)(" + identifierRe + ")"
                     },
@@ -123,6 +127,10 @@ ace.define(
                     },
 
                     // Keywords, operators, identifiers
+                    {
+                        token: ["keyword.control.ainaya", "text"],
+                        regex: "(ainaya)(\\s)"
+                    },
                     {
                         token: keywordMapper,
                         regex: "\\b" + identifierRe + "\\b"
@@ -246,6 +254,30 @@ ace.define(
             // Ensure stop marker matches closing tokens correctly (*/ for comments)
             this.foldingStopMarker =
                 /(\}|\]|^\s*[\:\}]|^\s*\/\/|^\s*#|^\s*\*\/)/;
+                
+                        // Add the missing implementation for multi-line comment folding
+            this.commentBlock = function (session, row, column) {
+                var line = session.getLine(row);
+                var searchStart = column + 2; // Start search right after '/*'
+                var maxRow = session.getLength();
+                var range = null;
+
+                for (var i = row; i < maxRow; i++) {
+                    line = session.getLine(i);
+                    var searchIndex = (i === row) ? searchStart : 0;
+                    
+                    var endCol = line.indexOf("*/", searchIndex);
+                    
+                    if (endCol !== -1) {
+                        // Found '*/', create the Range
+                        range = new Range(row, column, i, endCol + 2);
+                        break;
+                    }
+                }
+                
+                return range;
+            };
+
 
             // Defensive getFoldWidgetRange to avoid returning invalid ranges.
             this.getFoldWidgetRange = function (session, foldStyle, row) {
