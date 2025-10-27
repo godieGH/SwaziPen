@@ -14,7 +14,32 @@ Both use the `kwa` keyword ("for" in Swahili), but with different syntax and use
 This loop lets you repeat code a specific number of times, or while a condition is met.
 
 **Syntax:**  
-You **must** wrap the parameters in parentheses `( )`.
+```
+kwa(init; condition; updater) {
+  // loop body
+}
+```
+:::info
+**Things to notice and be carefully with.**
+- You **must** wrap the parameters in parentheses `( )`.
+- parameters are optional in the `kwa` loop, but make sure you keep the two semicolons between them. `kwa(;;){}`
+- `init` can only be an assignment statement eg. `a = 3` do not use `data a = 3`
+- `condition` runs after every iteration, if true the loop iterates if false it stops
+- it can be anything that resolves to true/false
+- swazi supports two kinds of `updater` can only be `i++`/`i--` as increment/decrement.
+- Invalid updater patterns like `i+=2` or `i=i+1` are not allowed if you want to use these you should omit the updater and use it inside the loop body as a statement.
+eg.
+```swazi
+data i = 0; # init used outside here
+kwa(;i < 10;) {
+  
+  i+=2  # step by two
+}
+```
+:::
+
+
+
 
 ```swazi
 kwa(x=0; x<10; x++):

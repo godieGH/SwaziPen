@@ -68,6 +68,9 @@ chapisha ujumbe.herufi;  // Prints: 12
 ```
 
 **Note:** `.herufi` counts *all* characters including spaces and punctuation!
+:::info
+- You can also use `str.urefu()` to get the size of characters in a string
+:::
 
 ### Your Turn
 

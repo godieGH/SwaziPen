@@ -78,7 +78,7 @@ Every number in SwaziLang has properties that tell you things about it. These pr
 
 ### Checking Number Validity
 
-#### `.siSahihi` - Is it a valid number?
+#### `.siSahihi`/`isNaN` - Is it a valid number?
 
 ```swazi
 data a = 42;
@@ -92,29 +92,29 @@ chapisha b.siSahihi;      // Prints: kweli (it IS NaN/invalid)
 - `kweli` means "yes, it's NaN (invalid)"
 - `sikweli` means "no, it's valid"
 
-#### `.inf` - Is it infinite?
+#### `.isInf` - Is it infinite?
 
 ```swazi
 data x = 1000**1000;
-chapisha x.inf;  // Prints: kweli (yes, it's infinite)
+chapisha x.isInf;  // Prints: kweli (yes, it's infinite)
 
 data y = 42;
-chapisha y.inf;  // Prints: sikweli (no, it's finite)
+chapisha y.isInf;  // Prints: sikweli (no, it's finite)
 ```
 
 ### Number Type Properties
 
-#### `.nzima` - Is it a whole number?
+#### `.isInt`/`.niInt` - Is it a whole number(an integer)?
 
 ```swazi
 data a = 42;
-chapisha a.nzima;         // Prints: kweli (yes, it's whole)
+chapisha a.isInt;         // Prints: kweli (yes, it's a integer)
 
 data b = 42.5;
-chapisha b.nzima;         // Prints: sikweli (no, it has decimals)
+chapisha b.isInt;         // Prints: sikweli (no, it has decimals)
 
 data c = 42.0;
-chapisha c.nzima;         // Prints: kweli (even 42.0 is considered whole!)
+chapisha c.isInt;         // Prints: kweli (even 42.0 is considered whole!)
 ```
 
 **Think about this:** Why would `42.0` be considered a whole number even though it's written with a decimal point?
@@ -126,44 +126,44 @@ Because mathematically, 42.0 equals 42 exactly. The decimal point doesn't make i
 
 </details>
 
-#### `.desimali` - Does it have a fractional part?
+#### `.niDesimali`/`isDecimal` - Does it have a fractional part?
 
 ```swazi
 data a = 3.14;
-chapisha a.desimali;      // Prints: kweli (yes, it has decimals)
+chapisha a.niDesimali;      // Prints: kweli (yes, it has decimals)
 
 data b = 10;
-chapisha b.desimali;      // Prints: sikweli (no decimals)
+chapisha b.niDesimali;      // Prints: sikweli (no decimals)
 ```
 
-This is essentially the opposite of `.nzima`!
+This is essentially the opposite of `.isInt`!
 
 ### Number Sign Properties
 
-#### `.chanya` - Is it positive?
+#### `.niChanya` - Is it positive?
 
 ```swazi
 data a = 42;
-chapisha a.chanya;        // Prints: kweli
+chapisha a.niChanya;        // Prints: kweli
 
 data b = -15;
-chapisha b.chanya;        // Prints: sikweli
+chapisha b.niChanya;        // Prints: sikweli
 
 data c = 0;
-chapisha c.chanya;        // Prints: sikweli (zero is NOT positive)
+chapisha c.niChanya;        // Prints: sikweli (zero is NOT positive)
 ```
 
-#### `.hasi` - Is it negative?
+#### `.niHasi` - Is it negative?
 
 ```swazi
 data a = -42;
-chapisha a.hasi;          // Prints: kweli
+chapisha a.niHasi;          // Prints: kweli
 
 data b = 15;
-chapisha b.hasi;          // Prints: sikweli
+chapisha b.niHasi;          // Prints: sikweli
 
 data c = 0;
-chapisha c.hasi;          // Prints: sikweli (zero is NOT negative)
+chapisha c.niHasi;          // Prints: sikweli (zero is NOT negative)
 ```
 
 **Your Turn:** If zero is neither positive nor negative, how would you check if a number is exactly zero?
@@ -173,7 +173,7 @@ chapisha c.hasi;          // Prints: sikweli (zero is NOT negative)
 
 ```swazi
 data x = 0;
-kama (!x.chanya na !x.hasi) {
+kama (!x.niChanya na !x.niHasi) {
     chapisha "Namba ni sifuri!";
 }
 
@@ -187,62 +187,62 @@ kama x sawa 0 {
 
 ### Mathematical Properties
 
-#### `.shufwa` - Is it even?
+#### `.niShufwa` - Is it even?
 
 ```swazi
 data a = 10;
-chapisha a.shufwa;        // Prints: kweli
+chapisha a.niShufwa;        // Prints: kweli
 
 data b = 7;
-chapisha b.shufwa;        // Prints: sikweli
+chapisha b.niShufwa;        // Prints: sikweli
 
 data c = 3.5;
-chapisha c.shufwa;        // Prints: sikweli (only works for whole numbers)
+chapisha c.niShufwa;        // Prints: sikweli (only works for whole numbers)
 ```
 
-#### `.witiri` - Is it odd?
+#### `.niWitiri` - Is it odd?
 
 ```swazi
 data a = 7;
-chapisha a.witiri;        // Prints: kweli
+chapisha a.niWitiri;        // Prints: kweli
 
 data b = 10;
-chapisha b.witiri;        // Prints: sikweli
+chapisha b.niWitiri;        // Prints: sikweli
 ```
 
-**Important:** `.shufwa` and `.witiri` only work with whole numbers. If you use them on decimals, they'll return `sikweli`.
+**Important:** `.niShufwa` and `.niWitiri` only work with whole numbers. If you use them on decimals, they'll return `sikweli`.
 
-#### `.tasa` - Is it prime?
+#### `.niTasa` - Is it prime?
 
 This is a special one! A prime number is only divisible by 1 and itself.
 
 ```swazi
 data a = 7;
-chapisha a.tasa;          // Prints: kweli (7 is prime)
+chapisha a.niTasa;          // Prints: kweli (7 is prime)
 
 data b = 8;
-chapisha b.tasa;          // Prints: sikweli (8 = 2 × 4, not prime)
+chapisha b.niTasa;          // Prints: sikweli (8 = 2 × 4, not prime)
 
 data c = 2;
-chapisha c.tasa;          // Prints: kweli (2 is the only even prime!)
+chapisha c.niTasa;          // Prints: kweli (2 is the only even prime!)
 
 data d = 1;
-chapisha d.tasa;          // Prints: sikweli (1 is not considered prime)
+chapisha d.niTasa;          // Prints: sikweli (1 is not considered prime)
 ```
 
 **Challenge:** Can you predict what these will return before checking?
 ```swazi
-chapisha 17.tasa;
-chapisha 20.tasa;
-chapisha 13.tasa;
+chapisha 17.niTasa;
+chapisha 20.niTasa;
+chapisha 13.niTasa;
 ```
 
 <details>
 <summary>Check your answers</summary>
 
-- `17.tasa` → kweli (17 is prime)
-- `20.tasa` → sikweli (20 = 4 × 5)
-- `13.tasa` → kweli (13 is prime)
+- `17.niTasa` → kweli (17 is prime)
+- `20.niTasa` → sikweli (20 = 4 × 5)
+- `13.niTasa` → kweli (13 is prime)
 
 </details>
 
@@ -566,7 +566,7 @@ kama amepita:
   chapisha `amefaulu: ${alama}`;
 
 // Check if it's a whole number grade
-kama alama.nzima {
+kama alama.isInt {
     chapisha "Alama kamili!";
 } vinginevyo {
     chapisha `Alama ina desimali: ${alama.kadiriaKwa(1)}`;
@@ -606,7 +606,7 @@ data mzunguko = 2 * PI * radius;
 chapisha `Mzunguko: ${mzunguko.kadiriaKwa(2)} cm`;
 
 // Check if radius is reasonable
-kama radius.chanya na radius.nzima {
+kama radius.niChanya na radius.isInt {
     chapisha "Radius ni sahihi";
 }
 ```
@@ -632,23 +632,23 @@ kazi onyeshaTaarifa namba {
     }
     
     // Type checks
-    chapisha `Nzima: ${namba.nzima ? "Ndio" : "Hapana"}`;
-    chapisha `Desimali: ${namba.desimali ? "Ndio" : "Hapana"}`;
+    chapisha `Nzima: ${namba.isInt ? "Ndio" : "Hapana"}`;
+    chapisha `Desimali: ${namba.niDesimali ? "Ndio" : "Hapana"}`;
     
     // Sign
-    kama namba.chanya {
+    kama namba.niChanya {
         chapisha "Ishara: Chanya (+)";
-    } vinginevyo kama namba.hasi {
+    } vinginevyo kama namba.niHasi {
         chapisha "Ishara: Hasi (-)";
     } vinginevyo {
         chapisha "Ishara: Sifuri (0)";
     }
     
     // Mathematical properties (only for integers)
-    kama namba.nzima {
-        chapisha `Shufwa: ${namba.shufwa ? "Ndio" : "Hapana"}`;
-        chapisha `Witiri: ${namba.witiri ? "Ndio" : "Hapana"}`;
-        chapisha `Tasa: ${namba.tasa ? "Ndio" : "Hapana"}`;
+    kama namba.isInt {
+        chapisha `Shufwa: ${namba.niShufwa ? "Ndio" : "Hapana"}`;
+        chapisha `Witiri: ${namba.niWitiri ? "Ndio" : "Hapana"}`;
+        chapisha `Tasa: ${namba.niTasa ? "Ndio" : "Hapana"}`;
     }
     
     // Some calculations
@@ -705,10 +705,10 @@ namba = Namba(namba);
 
 kama namba.siSahihi {
     chapisha "Tafadhali ingiza namba halali!";
-} vinginevyo kama !namba.nzima {
+} vinginevyo kama !namba.isInt {
     chapisha "Tafadhali ingiza namba kamili!";
-} vinginevyo kama !namba.chanya {
-    chapisha "Tafadhali ingiza namba chanya!";
+} vinginevyo kama !namba.niChanya {
+    chapisha "Tafadhali ingiza namba niChanya!";
 } vinginevyo {
     chapisha "Asante! Namba ni sahihi.";
 }
@@ -780,7 +780,7 @@ Write code that checks if a number is a perfect square (like 16, 25, 36).
 <details>
 <summary>Hint</summary>
 
-A perfect square's square root should be a whole number! Use `.kipeuo()` and `.nzima`.
+A perfect square's square root should be a whole number! Use `.kipeuo()` and `.isInt`.
 
 </details>
 

@@ -61,6 +61,7 @@ export default {
                 { text: "Assignment", link: "/en/op/assignment" },
                 { text: "Comparisons", link: "/en/op/comparisons" },
                 { text: "Logical Operators", link: "/en/op/logic-ops" },
+                { text: "Type Coarcions && Truthy/Falsy types", link: "/en/op/coarse-type" },
                 { text: "Identity Operators", link: "/en/op/identity-ops" }
             ]
         },

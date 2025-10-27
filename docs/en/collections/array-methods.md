@@ -57,6 +57,13 @@ We'll explore loops properly later!
 
 ## Core Array Methods
 
+### Length and size of an array
+
+#### `.urefu()` — returns the size of an array
+```swazi
+chapisha [4,6,7].urefu() # output 3
+```
+
 ### Adding Elements
 
 #### `.ongeza(value, ...)` - Add to End
