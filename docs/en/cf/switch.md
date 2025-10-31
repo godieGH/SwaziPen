@@ -214,3 +214,7 @@ chagua day:
 - Pick one style (C-style or Pythonic style) for all cases in a switch.
 - You can use `fanya` blocks inside case bodies, with either block style.
 - Always use `simama` to break out of cases.
+
+:::info
+Since version `2.3.0` you can now mix blocks in chagua statements just like you would in other context. but remember swazi still recommends using a single block style per statement but we still are developing so as to allow flexibility and freestyles as per version `2.3.0` and more.
+:::

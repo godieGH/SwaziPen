@@ -141,6 +141,11 @@ kama isEven(num) {
     ```swazi
     add(5, 6)
     ```
+:::info
+As per version `2.3.0+` you can wrap parameters in `kazi` statements with parentheses.
+::: 
+
+
 
 - **Lambda functions**
   - **One parameter:** No parentheses needed.

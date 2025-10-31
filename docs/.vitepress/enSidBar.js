@@ -105,7 +105,8 @@ export default {
             text: "Ternary & Literals",
             items: [
                 { text: "Swazi Ternary Expressions", link: "/en/literals/ternary" },
-                { text: "Swazi Template literals", link: "/en/literals/template-literals" }
+                { text: "Swazi Template literals", link: "/en/literals/template-literals" },
+                { text: "Shorthand Operators", link: "/en/literals/shorthand-operators" }
             ]
         },
         {
