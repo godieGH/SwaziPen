@@ -269,3 +269,168 @@ chapisha s.sawazisha()          // "Example Text"
 chapisha s.herufiKubwa()        // "   EXAMPLE TEXT   "
 chapisha s.herufiNdogo()        // "   example text   "
 chapisha s.kuna("Text")         // kweli
+```
+
+### Casino Game in SwaziLang 
+``` swazi
+
+tumia console // to use console.print() as expresion instead of chapisha <exp> statement
+kazi ask(qn) {
+  rudisha soma(qn);
+}
+
+// -----------------------
+// Structures
+// -----------------------
+
+muundo Player {
+  Player(name, balance) {
+    self.name = name;
+    self.balance = balance;
+    self.choice = "tail"; // head or tail
+    self.bet = 0;
+  }
+}
+
+muundo Game {
+  Game(minBet = 1) {
+    self.players = [];
+    self.round = 0;
+    self.minBet = minBet;
+  }
+
+  tabia addPlayer(player) {
+    self.players.push(player);
+  }
+
+  tabia allQuit() {
+    rudisha self.players.every(p => p.balance <= 0);
+  }
+
+  tabia playRound() {
+    self.round += 1;
+    chapisha `\n------ Round ${self.round} ------`;
+    chapisha `Players: ${self.players.urefu()}`;
+
+    // 1) Each player decides to play or skip
+    kwa p katika self.players {
+      kama (p.balance <= 0) {
+        chapisha (`${p.name} has no money. Skipping...`);
+        p.bet = 0;
+        endelea;
+      }
+
+      chapisha (`\n${p.name} - Balance: ${p.balance}`);
+      data yn = ask("Do you want to play? (1=yes, 0=no): ");
+      kama (yn === "0") {
+        chapisha (`${p.name} decides to skip self round.`);
+        p.bet = 0;
+        endelea;
+      }
+
+      data choice = ask("Choose 1=head or 0=tail: ");
+      kama (choice === "1") =>> p.choice = "head";
+      sivyo kama (choice === "0") =>> p.choice = "tail";
+      sivyo {
+        chapisha ("Invalid choice, defaulting to tail.");
+        p.choice = "tail";
+      }
+
+      data betStr = ask(`Enter bet (min ${self.minBet}): `);
+      data betNum = Namba(betStr) || self.minBet;
+
+      kama (betNum < self.minBet) {
+        chapisha (`Bet below min. Setting to ${self.minBet}`);
+        betNum = self.minBet;
+      }
+      kama (betNum > p.balance) {
+        chapisha (`Not enough balance. Betting all-in: ${p.balance}`);
+        betNum = p.balance;
+      }
+
+      p.bet = betNum;
+      chapisha (`${p.name} bets ${p.bet} on ${p.choice}`);
+    }
+
+    // 2) Flip coins and resolve
+    chapisha ("\nFlipping coins...");
+    kwa p katika self.players {
+      kama (p.bet <= 0) =>> endelea;
+
+      data flip = (Hesabu.rand()).kadiria(); // 0 or 1
+      data flipStr = flip === 1 ? "head" : "tail";
+      chapisha (`${p.name} flipped: ${flipStr}`);
+      fanya =>> data tt = 0; wakati tt < 1e3 =>> tt++; # keep a small wait
+      
+      data won = (flip === 1 && p.choice === "head") || (flip === 0 && p.choice === "tail");
+
+      kama (won) {
+        p.balance += p.bet; // win = profit = bet
+        chapisha (`✅ ${p.name} won! Bet ${p.bet} => new balance ${p.balance}`);
+      } sivyo {
+        p.balance -= p.bet;
+        chapisha (`❌ ${p.name} lost ${p.bet} => new balance ${p.balance}`);
+      }
+
+      p.bet = 0;
+      p.choice = "tail"; // reset for next round
+    }
+
+    // 3) Show leaderboard
+    chapisha ("\n--- Leaderboard ---");
+    data thabiti board = [...self.players].panga((a, b) => b.balance - a.balance);
+    board.forEach(p => console.print(`${p.name} : ${p.balance}`));
+    chapisha ("-------------------\n");
+  }
+}
+
+// -----------------------
+// Setup & Main Loop
+// -----------------------
+
+kazi main() {
+  data thabiti minBetInput = ask("Enter minimum bet (default 1): ");
+  data thabiti minBet = Namba(minBetInput) || 1;
+  data thabiti game = unda Game(minBet);
+
+  data thabiti numPlayersInput = ask("Number of players: ");
+  data thabiti numPlayers = Namba(numPlayersInput) || 1;
+
+  kwa (i = 1; i <= numPlayers; i++) {
+    data thabiti name = ask(`Name of player ${i}: `);
+    data thabiti startBalanceInput = ask(`Starting balance of ${name} (default 100): `);
+    data thabiti startBalance = Namba(startBalanceInput) || 100;
+    game.addPlayer(unda Player(name, startBalance));
+  }
+
+  console.print("\nGame start! Let’s go.\n");
+
+  wakati (kweli) {
+    kama (game.allQuit()) {
+      console.print("No players with money left. Game over.");
+      simama;
+    }
+
+    data thabiti cmd = ask("Choose: 1=Round, 2=Leaderboard, 0=Quit: ");
+
+    kama (cmd === "0") {
+      console.print("\nFinal standings:");
+      data thabiti finalBoard = [...game.players].sort((a, b) => b.balance - a.balance);
+      finalBoard.forEach(p => console.print(`${p.name} : ${p.balance}`));
+      simama;
+    } sivyo kama (cmd === "1") {
+      game.playRound();
+    } sivyo kama (cmd === "2") {
+      console.print("\n--- Current leaderboard ---");
+      data thabiti board = [...game.players].sort((a, b) => b.balance - a.balance);
+      board.forEach(p => console.print(`${p.name} : ${p.balance}`));
+      console.print("---------------------------\n");
+    } sivyo {
+      console.print("Invalid option, try again.");
+    }
+  }
+}
+
+main();
+
+```
