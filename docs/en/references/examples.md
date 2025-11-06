@@ -198,7 +198,7 @@ bus.on("evt", (p) => {
 ## 4. File Operations (Built-in Module Example)
 
 ```swazi
-tumia "fs"
+tumia fs # to use filesystem operations
 data filename = "test.txt"
 fs.writeFile(filename, "Hello world")
 data content = fs.readFile(filename)
@@ -210,7 +210,7 @@ chapisha content
 ## 5. Timers & Async (Built-in Module Example)
 
 ```swazi
-tumia "async"
+tumia async # to use timer API / and async operations
 async.setTimeout(2000, () => chapisha "2 seconds passed")
 data id = async.setInterval(1000, () => chapisha "Tick")
 async.setTimeout(5000, () => async.clearInterval(id))
@@ -237,12 +237,12 @@ chapisha future.object()
 ## 7. Regex Search and Replace
 
 ```swazi
-tumia "regex"
+tumia regex kama reg // to use the built in regex API
 data s = "abc 123 def 456"
-data found = regex.match(s, "\\d+", "g")     // Find all numbers
+data found = reg.match(s, "\\d+", "g")     // Find all numbers
 chapisha found
 
-data replaced = regex.replace(s, "\\d+", "X", "g")
+data replaced = reg.replace(s, "\\d+", "X", "g")
 chapisha replaced
 ```
 

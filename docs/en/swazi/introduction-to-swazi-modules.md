@@ -74,7 +74,7 @@ ruhusu {
     name
 }
 ```
-- Or export an object:
+- Or export an object as default:
 ```swazi
 data ob = { ... }
 ruhusu ob
@@ -97,6 +97,26 @@ tumia * kutoka "math"                // Wildcard import
 ```swazi
 add(5, 8)         // Calls add from math module
 ```
+
+# Other shorthand importing valid since swazi `v2.11.0^`
+```swazi 
+tumia module # that is same way as tumia module kutoka "module";
+tumia module kama m # that is like saying tumia module kama m kutoka "module"
+
+tumia console.print # this is like tumia {print} kutoka "console" for named Exports
+tumia console.print kama pr # this is like tumia {print kama pr } kutoka "console" for named Exports with alias
+
+
+```
+:::info 
+Note be careful using this shorthand they only support simple path specifier like "module" not "./modules/lib/app" or "@utils/str"
+- if you want to use or module is accessible via complex path specifier do not use these shorthand.
+
+### things to know if a module specifier is simple
+- when it is on the same level as the file importing it. eg ./main.sl can import ./app.sl with just `tumia Default kutoka "app"` `tumia app` without even a `.sl` or `.swz`
+- when it is an embeded module that swazi exposes it as simple eg. `console`, `math` but not `@utils/debounce` or `@utils/str` since these are not simple specifiers
+
+:::
 
 ---
 
